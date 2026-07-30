@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "madoka-notebook",
+  "name": "叛逆的物语",
+  "menuOrder": 30,
+  "hero": "hero.webp",
+  "colors": {
+    "accent": "#D995AA",
+    "secondary": "#9B83BD",
+    "surface": "#FFF9FB",
+    "text": "#403139"
+  },
+  "copy": null,
+  "decorations": {
+    "preset": "madoka-notebook",
+    "assets": {
+      "gemMadoka": "assets/cards/madoka.png",
+      "gemMami": "assets/cards/mami.png",
+      "gemHomura": "assets/cards/homura.png",
+      "gemKyoko": "assets/cards/kyoko.png",
+      "gemSayaka": "assets/cards/sayaka.png",
+      "mangaReference": "assets/cards/manga-reference-clean.webp",
+      "weaponMadoka": "assets/weapons/madoka-bow.png",
+      "weaponHomura": "assets/weapons/homura-shield.png",
+      "weaponMami": "assets/weapons/mami-musket.png",
+      "weaponSayaka": "assets/weapons/sayaka-sword.png",
+      "weaponKyoko": "assets/weapons/kyoko-spear.png",
+      "mascot": "assets/mascot-qb.png"
+    }
+  }
+}

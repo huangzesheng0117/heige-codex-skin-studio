@@ -2,5 +2,8 @@
 pet/
 .worktrees/
 .staging/
-output/*
-!output/heige-codex-skin-studio.skill
+runtime/
+output/
+tmp/
+backups/
+custom-theme-*.webp

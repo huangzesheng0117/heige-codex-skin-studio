@@ -1,3 +1,6 @@
+import { buildMadokaNotebookCss } from "./madoka-css.mjs";
+import { buildMadokaAfterSchoolCss, buildMadoHomuCss, buildMoonlightCrystalCss } from "./magical-presets-css.mjs";
+
 const DEFAULT_COLORS = {
   accent: "#24c9d7",
   secondary: "#ef8fd3",
@@ -34,6 +37,12 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
     text: color(theme.colors?.text, DEFAULT_COLORS.text),
   };
   const id = String(theme.id ?? "custom").replace(/[^a-z0-9_-]/gi, "");
+  const decorationCss = {
+    "madoka-notebook": buildMadokaNotebookCss,
+    "madoka-after-school": buildMadokaAfterSchoolCss,
+    "madohomu": buildMadoHomuCss,
+    "moonlight-crystal": buildMoonlightCrystalCss,
+  }[theme.decorations?.preset]?.() ?? "";
 
   return `/* HEIGE_CODEX_SKIN:${id} */
 :root[data-codex-window-type="electron"] {
@@ -42,6 +51,7 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
   --heige-secondary: ${colors.secondary};
   --heige-surface: ${colors.surface};
   --heige-text: ${colors.text};
+  --heige-hero: url(${JSON.stringify(heroDataUrl)});
   --color-background-surface: color-mix(in srgb, var(--heige-surface) 90%, transparent) !important;
   --color-background-panel: color-mix(in srgb, var(--heige-surface) 94%, transparent) !important;
   --color-background-button-primary: var(--heige-accent) !important;
@@ -54,7 +64,7 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
   background:
     linear-gradient(90deg, color-mix(in srgb, var(--heige-surface) 96%, transparent) 0 22%, transparent 46%),
     linear-gradient(180deg, transparent 0 45%, color-mix(in srgb, var(--heige-surface) 78%, transparent) 78% 100%),
-    url(${JSON.stringify(heroDataUrl)}) right center / cover no-repeat fixed !important;
+    var(--heige-hero) right center / cover no-repeat fixed !important;
 }
 
 #root::before {
@@ -107,6 +117,30 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
 [data-app-action-sidebar-thread-active="true"] {
   background: linear-gradient(90deg, color-mix(in srgb, var(--heige-accent) 22%, transparent), color-mix(in srgb, var(--heige-secondary) 16%, transparent)) !important;
 }
+
+[data-content-search-unit-key$=":assistant"] {
+  position: relative;
+  isolation: isolate;
+  color: color-mix(in srgb, var(--heige-text) 92%, #111) !important;
+  text-shadow: 0 1px 1px color-mix(in srgb, var(--heige-surface) 92%, transparent);
+}
+
+[data-content-search-unit-key$=":assistant"]::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -10px -12px;
+  border: 1px solid color-mix(in srgb, var(--heige-accent) 22%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--heige-surface) 86%, transparent);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--heige-text) 9%, transparent);
+  backdrop-filter: blur(14px) saturate(.92);
+  pointer-events: none;
+}
+
+[data-local-conversation-final-assistant] [data-content-search-unit-key$=":assistant"]::before {
+  content: none;
+}
 ${logoDataUrl === null ? "" : `
 /* 侧栏工作区标题换品牌 Logo，按钮仍可点开模式切换 */
 .app-shell-left-panel button[aria-haspopup="menu"][aria-label*="ChatGPT"] {
@@ -133,5 +167,5 @@ body::after {
   z-index: 15;
   filter: drop-shadow(0 12px 26px color-mix(in srgb, var(--heige-text) 24%, transparent));
 }
-`}`;
+`}${decorationCss}`;
 }

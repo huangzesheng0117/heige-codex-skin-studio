@@ -13,6 +13,36 @@ import { THEME_SCHEMA_VERSION } from "./constants.mjs";
 
 const COLOR_KEYS = ["accent", "secondary", "surface", "text"];
 const COPY_KEYS = ["brand", "headline", "tagline"];
+const MADOKA_NOTEBOOK_ASSET_KEYS = [
+  "gemMadoka",
+  "gemMami",
+  "gemHomura",
+  "gemKyoko",
+  "gemSayaka",
+  "mangaReference",
+  "weaponMadoka",
+  "weaponHomura",
+  "weaponMami",
+  "weaponSayaka",
+  "weaponKyoko",
+  "mascot",
+];
+const MAGICAL_CARD_ASSET_KEYS = [
+  "gemMadoka",
+  "gemMami",
+  "gemHomura",
+  "gemKyoko",
+  "gemSayaka",
+];
+const MANGA_CARD_ASSET_KEYS = [...MAGICAL_CARD_ASSET_KEYS, "mangaReference"];
+const DETECTIVE_CASEBOOK_ASSET_KEYS = [...MAGICAL_CARD_ASSET_KEYS, "casebookReference"];
+const DECORATION_PRESET_ASSET_KEYS = new Map([
+  ["madoka-notebook", MADOKA_NOTEBOOK_ASSET_KEYS],
+  ["madoka-after-school", MANGA_CARD_ASSET_KEYS],
+  ["madohomu", MANGA_CARD_ASSET_KEYS],
+  ["moonlight-crystal", DETECTIVE_CASEBOOK_ASSET_KEYS],
+]);
+const DECORATION_PRESETS = new Set(DECORATION_PRESET_ASSET_KEYS.keys());
 const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 const HEX_COLOR = /^#[0-9A-F]{6}$/i;
 const THEME_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -37,7 +67,7 @@ function isInside(root, candidate) {
   );
 }
 
-function normalizeAssetPath(value, field) {
+function normalizeAssetPath(value, field, { allowSvg = false } = {}) {
   if (
     typeof value !== "string" ||
     !value.trim() ||
@@ -47,8 +77,9 @@ function normalizeAssetPath(value, field) {
   ) {
     throw new Error(`theme ${field} must be a relative path inside the theme directory`);
   }
-  if (!IMAGE_EXTENSIONS.has(extname(value).toLowerCase())) {
-    throw new Error(`theme ${field} must be PNG, JPEG, or WebP`);
+  const extension = extname(value).toLowerCase();
+  if (!IMAGE_EXTENSIONS.has(extension) && !(allowSvg && extension === ".svg")) {
+    throw new Error(`theme ${field} must be ${allowSvg ? "PNG, JPEG, WebP, or SVG" : "PNG, JPEG, or WebP"}`);
   }
   return value;
 }
@@ -89,6 +120,30 @@ function normalizeCopy(copy) {
   );
 }
 
+function normalizeDecorations(decorations) {
+  if (decorations === undefined || decorations === null) return null;
+  if (!isRecord(decorations)) {
+    throw new Error("theme decorations must be null or an object");
+  }
+  if (!DECORATION_PRESETS.has(decorations.preset)) {
+    throw new Error(`unsupported theme decoration preset: ${decorations.preset}`);
+  }
+  if (!isRecord(decorations.assets)) {
+    throw new Error("theme decorations.assets must be an object");
+  }
+  const assetKeys = DECORATION_PRESET_ASSET_KEYS.get(decorations.preset);
+
+  return {
+    preset: decorations.preset,
+    assets: Object.fromEntries(
+      assetKeys.map((key) => [
+        key,
+        normalizeAssetPath(decorations.assets[key], `decorations.assets.${key}`, { allowSvg: true }),
+      ]),
+    ),
+  };
+}
+
 export function validateThemeManifest(input) {
   if (!isRecord(input)) {
     throw new Error("theme manifest must be an object");
@@ -112,6 +167,7 @@ export function validateThemeManifest(input) {
     polaroid: input.polaroid === undefined || input.polaroid === null ? null : normalizeAssetPath(input.polaroid, "polaroid"),
     colors: normalizeColors(input.colors),
     copy: normalizeCopy(input.copy),
+    decorations: normalizeDecorations(input.decorations),
   };
 }
 
@@ -139,6 +195,16 @@ export async function loadTheme(themeDir) {
   const heroPath = await resolveAsset(root, realRoot, manifest.hero, "hero");
   const logoPath = manifest.logo ? await resolveAsset(root, realRoot, manifest.logo, "logo") : null;
   const polaroidPath = manifest.polaroid ? await resolveAsset(root, realRoot, manifest.polaroid, "polaroid") : null;
+  const decorationPaths = manifest.decorations
+    ? Object.fromEntries(
+      await Promise.all(
+        Object.entries(manifest.decorations.assets).map(async ([key, relativePath]) => [
+          key,
+          await resolveAsset(root, realRoot, relativePath, `decorations.assets.${key}`),
+        ]),
+      ),
+    )
+    : null;
 
-  return { manifest, heroPath, logoPath, polaroidPath, root };
+  return { manifest, heroPath, logoPath, polaroidPath, decorationPaths, root };
 }

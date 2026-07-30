@@ -79,5 +79,9 @@ export async function listThemes({ roots }) {
       }
     }
   }
-  return themes.sort((a, b) => a.name.localeCompare(b.name));
+  return themes.sort((a, b) => {
+    const leftOrder = Number.isInteger(a.menuOrder) ? a.menuOrder : Number.MAX_SAFE_INTEGER;
+    const rightOrder = Number.isInteger(b.menuOrder) ? b.menuOrder : Number.MAX_SAFE_INTEGER;
+    return leftOrder - rightOrder || a.name.localeCompare(b.name);
+  });
 }

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "moonlight-crystal",
+  "name": "名侦探光之美少女（4K版）",
+  "menuOrder": 50,
+  "hero": "hero.webp",
+  "colors": {
+    "accent": "#A06FD3",
+    "secondary": "#E78EC1",
+    "surface": "#FBF8FD",
+    "text": "#3E3049"
+  },
+  "copy": null,
+  "decorations": {
+    "preset": "moonlight-crystal",
+    "assets": {
+      "gemMadoka": "assets/icons/fairy.png",
+      "gemMami": "assets/icons/answer.png",
+      "gemHomura": "assets/icons/mystique.png",
+      "gemKyoko": "assets/icons/eclair.png",
+      "gemSayaka": "assets/icons/arcana.png",
+      "casebookReference": "assets/cards/casebook-reference.svg"
+    }
+  }
+}

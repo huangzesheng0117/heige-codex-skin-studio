@@ -38,7 +38,67 @@ test("normalizes the minimal theme and supplies color defaults", () => {
       text: "#122C60",
     },
     copy: null,
+    decorations: null,
   });
+});
+
+test("validates and resolves the complete Madoka decoration asset set", async () => {
+  const assetKeys = [
+    "gemMadoka", "gemMami", "gemHomura", "gemKyoko", "gemSayaka", "mangaReference",
+    "weaponMadoka", "weaponHomura", "weaponMami", "weaponSayaka", "weaponKyoko",
+    "mascot",
+  ];
+  const assets = Object.fromEntries(assetKeys.map((key) => [key, `decor/${key}.png`]));
+  assets.weaponMadoka = "decor/weaponMadoka.svg";
+  const manifest = {
+    ...minimalManifest,
+    decorations: { preset: "madoka-notebook", assets },
+  };
+
+  await withTheme(manifest, async (root) => {
+    await mkdir(join(root, "decor"));
+    await writeFile(join(root, "hero.png"), Buffer.from([1]));
+    for (const relativePath of Object.values(assets)) {
+      await writeFile(join(root, relativePath), Buffer.from([1]));
+    }
+
+    const theme = await loadTheme(root);
+    assert.equal(theme.manifest.decorations.preset, "madoka-notebook");
+    assert.equal(theme.decorationPaths.gemMadoka, join(root, "decor", "gemMadoka.png"));
+    assert.equal(theme.decorationPaths.weaponMadoka, join(root, "decor", "weaponMadoka.svg"));
+    assert.equal(Object.keys(theme.decorationPaths).length, assetKeys.length);
+  });
+
+  assert.throws(
+    () => validateThemeManifest({ ...minimalManifest, decorations: { preset: "unknown", assets } }),
+    /unsupported theme decoration preset/,
+  );
+});
+
+test("validates the manga-card presets and detective casebook preset", async () => {
+  const compactKeys = ["gemMadoka", "gemMami", "gemHomura", "gemKyoko", "gemSayaka"];
+
+  for (const preset of ["madoka-after-school", "madohomu", "moonlight-crystal"]) {
+    const assetKeys = preset === "moonlight-crystal"
+      ? [...compactKeys, "casebookReference"]
+      : [...compactKeys, "mangaReference"];
+    const assets = Object.fromEntries(assetKeys.map((key) => [key, `decor/${key}.png`]));
+    const manifest = {
+      ...minimalManifest,
+      id: preset,
+      decorations: { preset, assets },
+    };
+    await withTheme(manifest, async (root) => {
+      await mkdir(join(root, "decor"));
+      await writeFile(join(root, "hero.png"), Buffer.from([1]));
+      for (const relativePath of Object.values(assets)) {
+        await writeFile(join(root, relativePath), Buffer.from([1]));
+      }
+      const theme = await loadTheme(root);
+      assert.equal(theme.manifest.decorations.preset, preset);
+      assert.deepEqual(Object.keys(theme.decorationPaths), assetKeys);
+    });
+  }
 });
 
 test("merges optional colors and preserves optional copy", () => {

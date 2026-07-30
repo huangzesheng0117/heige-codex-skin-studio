@@ -7,7 +7,13 @@ import { buildSkinMenuScript, CSS_SENTINELS } from "./skin-menu.mjs";
 
 const STYLE_ID = "heige-codex-skin-style";
 const MENU_ID = "heige-codex-skin-menu";
-const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp" };
+const MIME = {
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".svg": "image/svg+xml",
+};
 const OVERLAY_MARKER = "avatar-overlay";
 
 // 宠物悬浮层也是 app:// renderer，皮肤只能进主窗口
@@ -54,21 +60,35 @@ async function themeEntry(loadedTheme) {
   const heroDataUrl = await assetDataUrl(loadedTheme.heroPath, "hero");
   const logoDataUrl = await assetDataUrl(loadedTheme.logoPath, "logo");
   const polaroidDataUrl = await assetDataUrl(loadedTheme.polaroidPath, "polaroid");
+  const decorationAssets = loadedTheme.decorationPaths
+    ? Object.fromEntries(
+      await Promise.all(
+        Object.entries(loadedTheme.decorationPaths).map(async ([key, path]) => [
+          key,
+          await assetDataUrl(path, `decorations.${key}`),
+        ]),
+      ),
+    )
+    : null;
   return {
     id: loadedTheme.manifest.id,
     name: loadedTheme.manifest.name,
     accent: loadedTheme.manifest.colors?.accent,
     css: buildSkinCss({ theme: loadedTheme.manifest, heroDataUrl, logoDataUrl, polaroidDataUrl }),
+    decorations: decorationAssets
+      ? { preset: loadedTheme.manifest.decorations.preset, assets: decorationAssets }
+      : null,
   };
 }
 
-export async function applySkin({ loadedTheme, themes, port, deps = {} }) {
+export async function applySkin({ loadedTheme, themes, activeThemeId, port, deps = {} }) {
   const wait = deps.waitForRendererTargets ?? waitForRendererTargets;
   const Session = deps.Session ?? CdpSession;
   const menuThemes = themes?.length ? themes : [loadedTheme];
   const entries = [];
   for (const theme of menuThemes) entries.push(await themeEntry(theme));
-  const themeId = loadedTheme.manifest.id;
+  const fallbackId = loadedTheme.manifest.id;
+  const themeId = activeThemeId ?? fallbackId;
   // 自定义上传主题的客户端 CSS 模板：哨兵值占位，页面内替换，和内置主题同一套模板
   const cssTemplate = buildSkinCss({
     theme: {
@@ -87,6 +107,7 @@ export async function applySkin({ loadedTheme, themes, port, deps = {} }) {
   const expression = buildSkinMenuScript({
     entries,
     activeId: themeId,
+    fallbackId,
     styleId: STYLE_ID,
     menuId: MENU_ID,
     cssTemplate,
@@ -103,9 +124,11 @@ export async function removeSkin({ port, deps = {} }) {
   const fetchTargets = deps.fetchRendererTargets ?? fetchRendererTargets;
   const Session = deps.Session ?? CdpSession;
   const expression = `(() => {
+    window.__heigeCodexSkin?.destroy?.();
     document.getElementById(${JSON.stringify(STYLE_ID)})?.remove();
     document.getElementById(${JSON.stringify(MENU_ID)})?.remove();
     delete document.documentElement.dataset.heigeCodexSkin;
+    delete window.__heigeCodexSkin;
     return true;
   })()`;
   const targets = await fetchTargets(port);

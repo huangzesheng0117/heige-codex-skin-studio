@@ -80,6 +80,33 @@ test("injects the in-app switcher menu with every loaded theme", async () => {
   assert.match(FakeSession.expressions[0], /"night-city"/);
 });
 
+test("embeds optional Madoka decoration assets without touching other themes", async () => {
+  FakeSession.expressions = [];
+  const { loaded, deps } = await fixture();
+  const assetKeys = [
+    "gemMadoka", "gemMami", "gemHomura", "gemKyoko", "gemSayaka", "mangaReference",
+    "weaponMadoka", "weaponHomura", "weaponMami", "weaponSayaka", "weaponKyoko",
+    "mascot",
+  ];
+  loaded.manifest.decorations = { preset: "madoka-notebook" };
+  loaded.decorationPaths = Object.fromEntries(assetKeys.map((key) => [key, loaded.heroPath]));
+
+  await applySkin({ loadedTheme: loaded, port: 9341, deps });
+
+  assert.match(FakeSession.expressions[0], /madoka-notebook/);
+  assert.match(FakeSession.expressions[0], /"gemMadoka":"data:image\/png;base64/);
+  assert.match(FakeSession.expressions[0], /heige-madoka-cards/);
+});
+
+test("boots the stored custom upload with the loaded theme as fallback", async () => {
+  FakeSession.expressions = [];
+  const { loaded, deps } = await fixture();
+  const result = await applySkin({ loadedTheme: loaded, activeThemeId: "custom-upload", port: 9341, deps });
+  assert.equal(result.themeId, "custom-upload");
+  assert.match(FakeSession.expressions[0], /"activeId":"custom-upload"/);
+  assert.match(FakeSession.expressions[0], /"fallbackId":"demo"/);
+});
+
 test("removes and checks the live style without persistent machinery", async () => {
   FakeSession.expressions = [];
   const { deps } = await fixture();

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "test": "node --test",
+    "package:skill": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package-skill.ps1",
     "doctor": "node src/cli.mjs doctor",
     "status": "node src/cli.mjs status",
     "list": "node src/cli.mjs list",

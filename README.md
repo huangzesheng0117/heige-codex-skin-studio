@@ -1,91 +1,142 @@
-# HeiGe Codex Skin Studio | Codex 换肤工作室
+# HeiGe Codex Skin Studio｜Windows 六主题定制版
 
-<div align="center">
+这是基于 [HeiGeAi/heige-codex-skin-studio](https://github.com/HeiGeAi/heige-codex-skin-studio) 改造的 Windows 主题发行版。它通过本机回环 CDP 向 Codex Desktop 实时注入背景、配色、主题菜单、漫画功能卡片和装饰元素，不修改 MSIX、`app.asar`、应用二进制或签名资源。
 
-**给 Codex Desktop 一键换肤：一张图片就是一个主题，右上角菜单即时切换。**
+当前版本已在 Windows 11、MSIX 版 Codex Desktop 上真机运行验证，仓库只保留 6 套自定义主题和 Windows 安装链路。
 
-*Reskin the Codex Desktop app on macOS: one image becomes a theme, switch instantly from an in-app menu.*
+## 新电脑最快安装
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Platform](https://img.shields.io/badge/platform-macOS-black)
-![Codex Desktop](https://img.shields.io/badge/Codex-Desktop-10a37f)
+前提：已经安装 Codex Desktop。
 
-[中文](#这是什么) · [English](#english)
+### 方法一：下载仓库 ZIP
 
-</div>
+1. 打开 [huangzesheng0117/heige-codex-skin-studio](https://github.com/huangzesheng0117/heige-codex-skin-studio)。
+2. 点击 `Code → Download ZIP`。
+3. 解压后双击仓库根目录的：
 
-![真机截图：Miku 主题 + 右上角一键切换菜单](docs/images/miku-switcher-live.jpg)
-
-*真机截图：Miku 488137 高精度主题（品牌 Logo + 肖像背景 + 拍立得挂件），右上角 🎨 菜单一键切换全部主题和自定义上传。*
-
-## 这是什么
-
-一个效率优先的 macOS Codex Desktop 换肤工具。它通过本机回环 CDP 把主题实时注入 Codex 界面，不修改 `app.asar`，不破坏应用签名，也不需要为每次 Codex 更新重新适配。
-
-- **一键切换**：应用皮肤后 Codex 右上角出现 🎨 菜单，所有已装主题和原生界面即点即换，零等待。
-- **自定义上传**：菜单里选「＋ 自定义图片」直接上传本地图片，自动按图片风格取色（主色、辅色、面板底色、文字色），即点即换，重启后重新 apply 仍会保留；行尾 × 一键删除。
-- **一张图片就是一个主题**：任意 PNG、JPG、JPEG、WebP 直接生成皮肤（配色 + 背景底图）。
-- **9 个内置预设**：高精度定制的 `Miku 488137`，加上原神、鸣潮、火影忍者、恋与深空各两款轻量主题。
-- **AI 生成主题**：把 Skill 交给 Codex，让它先用生图能力产出主图，再自动做成皮肤，无需额外 API Key。
-- **可选桌宠**：独立的 `Miku Future` 动画桌面宠物，不覆盖 Codex 内置宠物。
-- **随时还原**：暂停皮肤或切回原生界面，官方安装包始终原封不动。
-
-| 项目 | 参数 |
-|---|---|
-| 适用应用 | OpenAI Codex Desktop（ChatGPT 桌面端） |
-| 支持平台 | macOS 已实机验证；Windows 已适配待实机验收 |
-| 注入方式 | Chrome DevTools Protocol，仅监听本机回环 `127.0.0.1:9341` |
-| 内置主题 | 9 个（1 个高精度 Miku 488137 + 8 个游戏轻量主题） |
-| 第三方依赖 | 0 个，复用 Codex 自带 Node.js 运行时 |
-| 自动化测试 | 55 项全通过 |
-| 协议 | 代码 MIT，角色素材权利归各自权利人 |
-| 最近更新 | 2026-07-16 |
-
-![真机截图：原神星夜主题](docs/images/genshin-night-live.jpg)
-
-*真机截图：原神 · 星夜 轻量主题（无文字干净底图 + 自动配色）。注意：使用这类深色底图主题时，请把 Codex 自身的外观设置切换到深色模式，文字才能正常显示；浅色模式下深色背景上的文字对比度不足。*
-
-## 最快使用
-
-需要 macOS 和已安装的 Codex Desktop。下载本仓库后：
-
-```bash
-open "<仓库路径>/scripts/install.command"
+```text
+install.bat
 ```
 
-安装脚本会把工具放到 `~/.codex/heige-codex-skin-studio`，并默认应用 Miku 预设。应用皮肤时 Codex 会被正常退出并以本机调试模式重新打开，当前任务请先保存。
+安装器会自动：
 
-之后的日常切换都在 Codex 右上角 🎨 菜单里完成。想用自己的图片做皮肤：
+- 把运行文件安装到 `%USERPROFILE%\.codex\heige-codex-skin-studio`。
+- 应用默认主题“叛逆的物语”。
+- 为当前 Windows 用户启用自动加载，之后正常重启 Codex 仍会恢复主题。
+- 优先使用可选的本地 `runtime\node.exe`；GitHub 下载版没有该目录时，自动使用 Codex 自带 Node 或系统 Node。
 
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/scripts/customize.command"
+### 方法二：Git 克隆
+
+```powershell
+git clone https://github.com/huangzesheng0117/heige-codex-skin-studio.git
+Set-Location ".\heige-codex-skin-studio"
+& ".\install.ps1"
 ```
 
-暂停皮肤、回到原生外观：
+### 方法三：Release 安装包
 
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/scripts/pause.command"
+从 [Releases](https://github.com/huangzesheng0117/heige-codex-skin-studio/releases/latest) 下载最新的 `.skill` 文件：
+
+- 可以直接交给新电脑上的 Codex，让它按照 Skill 说明安装。
+- 也可以把 `.skill` 当作 ZIP 解压，然后双击 `heige-codex-skin-studio\scripts\install.bat`。
+
+更详细的新电脑流程见 [新电脑安装说明](docs/NEW_PC_INSTALL.md)。
+
+## 当前 6 套主题
+
+| 主题 ID | 菜单名称 | 新建任务界面 |
+| --- | --- | --- |
+| `madoka-after-school-2k` | 见泷原放课后（2K版） | 魔法少女漫画功能卡片 |
+| `madoka-after-school` | 见泷原放课后（4K版） | 魔法少女漫画功能卡片 |
+| `madoka-notebook` | 叛逆的物语 | 魔法少女漫画功能卡片、五件武器与 QB |
+| `madohomu` | 圆焰 | 魔法少女漫画功能卡片 |
+| `moonlight-crystal-2k` | 名侦探光之美少女（2K版） | 立体案件卷宗功能卡片 |
+| `moonlight-crystal` | 名侦探光之美少女（4K版） | 立体案件卷宗功能卡片 |
+
+默认安装主题为 `madoka-notebook`（叛逆的物语）。安装后可通过 Codex 右上角 🎨 菜单即时切换所有主题、自定义图片或原生界面。
+
+## 安装选项
+
+PowerShell 安装入口支持：
+
+```powershell
+& ".\install.ps1" -Theme "moonlight-crystal-2k"
 ```
 
-注意：Codex 手动重启后注入会消失（CDP 方案的天性），重跑一次 `apply.command` 即可回来。
+只复制文件，不启动或重启 Codex：
 
-### Windows（新增，待实机验收）
+```powershell
+& ".\install.ps1" -SkipApply
+```
 
-Windows 适配已随本版本提供：双击 `scripts\windows\install.bat` 安装并默认应用 Miku 预设，日常切换同样走右上角 🎨 菜单；`pause.bat` 暂停，`customize.bat` 选图做皮肤。实现完整、单测覆盖，作者手头暂无 Windows 实机，欢迎第一批 Windows 用户开 Issue 反馈。
+应用主题但不注册自动加载：
 
-## 交给 Codex 使用
+```powershell
+& ".\install.ps1" -SkipAutoLoad
+```
 
-把 `output/heige-codex-skin-studio.skill` 交给 Codex，可以直接说：
+安装位置固定为当前用户目录，不包含作者电脑的绝对路径：
 
-> 用这张图片给 Codex 做一个皮肤并应用。
+```text
+C:\Users\<当前用户>\.codex\heige-codex-skin-studio
+```
 
-或者：
+## 日常命令
 
-> 先生成一张蓝紫色赛博城市主图，再把它做成 Codex 皮肤。
+应用指定主题：
 
-Skill 会优先调用 Codex 当前可用的图片生成能力产出主图，然后调用本地确定性工具创建并应用主题。
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\apply.ps1" `
+  -Theme "madohomu"
+```
 
-## 极简主题格式
+修改重启后自动加载的主题：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\enable-auto-load.ps1" `
+  -Theme "moonlight-crystal-2k" -Port 9341
+```
+
+关闭自动加载：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\disable-auto-load.ps1"
+```
+
+暂停当前实时皮肤：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\pause.ps1"
+```
+
+查看当前注入状态：
+
+```powershell
+$root = "$env:USERPROFILE\.codex\heige-codex-skin-studio"
+. (Join-Path $root "scripts\windows\lib\common.ps1")
+$node = Get-NodeRuntime -AppPath (Get-CodexApp)
+& $node (Join-Path $root "src\cli.mjs") status --port 9341
+```
+
+自动加载日志：
+
+```text
+%APPDATA%\HeiGeCodexSkinStudio\auto-load.log
+```
+
+## 用自己的图片制作主题
+
+支持 PNG、JPG、JPEG 和 WebP：
+
+```powershell
+$root = "$env:USERPROFILE\.codex\heige-codex-skin-studio"
+. (Join-Path $root "scripts\windows\lib\common.ps1")
+$node = Get-NodeRuntime -AppPath (Get-CodexApp)
+& $node (Join-Path $root "src\cli.mjs") create `
+  --image "C:\绝对路径\hero.webp" --name "我的主题"
+```
+
+主题最小格式：
 
 ```json
 {
@@ -102,86 +153,55 @@ Skill 会优先调用 Codex 当前可用的图片生成能力产出主图，然�
 }
 ```
 
-只有 `schemaVersion`、`id`、`name` 和 `hero` 必填。图片必须位于主题目录内，颜色和文案都可省略。
+图片和扩展装饰必须位于主题目录内部。加载器会拒绝绝对路径、`..` 路径穿越、逃逸符号链接、空文件和不支持的图片格式。
 
-## 主题概念图库
+## 开发、测试和发行
 
-这些 4K 概念图展示「一张图就是一个皮肤方向」的设计效果，内置的 8 款轻量预设使用同场景的无文字干净壁纸版本。
+运行完整测试：
 
-| 原神 | 原神 |
-| --- | --- |
-| ![原神 Codex UI 概念一](assets/previews/genshin-impact-codex-ui-1.webp) | ![原神 Codex UI 概念二](assets/previews/genshin-impact-codex-ui-2.webp) |
-
-| 鸣潮 | 鸣潮 |
-| --- | --- |
-| ![鸣潮 Codex UI 概念一](assets/previews/wuthering-waves-codex-ui-1.webp) | ![鸣潮 Codex UI 概念二](assets/previews/wuthering-waves-codex-ui-2.webp) |
-
-| 火影忍者 | 火影忍者 |
-| --- | --- |
-| ![火影忍者 Codex UI 概念一](assets/previews/naruto-codex-ui-1.webp) | ![火影忍者 Codex UI 概念二](assets/previews/naruto-codex-ui-2.webp) |
-
-| 恋与深空 | 恋与深空 |
-| --- | --- |
-| ![恋与深空 Codex UI 概念一](assets/previews/love-and-deepspace-codex-ui-1.webp) | ![恋与深空 Codex UI 概念二](assets/previews/love-and-deepspace-codex-ui-2.webp) |
-
-## 命令行
-
-```bash
-node src/cli.mjs list
-node src/cli.mjs create --image "/absolute/path/hero.webp" --name "My Skin"
-node src/cli.mjs apply --theme my-skin-id
-node src/cli.mjs status
-node src/cli.mjs pause
-node src/cli.mjs doctor
-```
-
-## 常见问题
-
-### 换肤会弄坏 Codex 或破坏签名吗？
-
-不会。本工具从不修改 `app.asar`、二进制或签名资源，`codesign --verify` 始终通过。皮肤是运行时通过 [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/) 注入的一段 CSS，正常重启 Codex 就会完全回到官方原生界面。
-
-### 支持 Windows 吗？
-
-支持。双击 `scripts\windows\install.bat` 安装，日常切换同样走右上角 🎨 菜单。Windows 适配代码完整且有单测覆盖，目前等待实机验收，遇到问题欢迎开 Issue。
-
-### 怎么用自己的图片做主题？
-
-三条路：右上角 🎨 菜单选「＋ 自定义图片」直接上传（自动按图片取色）；双击 `customize.command` 走图形界面；或用命令行 `node src/cli.mjs create --image 图片路径 --name 主题名`。
-
-### Codex 更新版本后主题还能用吗？
-
-能。CDP 注入不依赖 Codex 安装包的内部结构，Codex 升级后不需要重新适配，重跑一次 `apply.command` 即可。这是相对修改 `app.asar` 方案的核心优势：那类方案每次应用更新都要重新打补丁，还会破坏签名。
-
-## 设计边界
-
-这是一个轻量工具。皮肤跟随当前 renderer 存活，Codex 完整重载界面后重新运行一次 `apply.command` 即可。macOS 已实机验证；Windows 适配为新增能力，等待社区实机反馈。CDP 只绑定本机回环地址 `127.0.0.1`。
-
-本仓库前身是走 ASAR 修改路线的 codex-miku-theme，旧实现保存在历史提交中（tag `v5-asar-legacy`），已由当前 CDP 注入方案取代。
-
-## 开发
-
-```bash
+```powershell
 npm test
-npm run doctor
 ```
 
-## English
+生成可分发 Skill：
 
-**HeiGe Codex Skin Studio** reskins the Codex Desktop app on macOS through loopback-only CDP injection. It never touches `app.asar` or the code signature. Any single image becomes a theme (palette + backdrop); after applying once, a 🎨 menu in the top-right corner of Codex switches between every installed theme and the native look instantly. Nine presets ship built in: the fully customized `Miku 488137` showcase plus eight lightweight game-inspired themes. Hand the bundled `.skill` to Codex and it can even generate theme artwork with its own image tools, then install the result deterministically.
+```powershell
+npm run package:skill
+```
 
-Quick start: run `scripts/install.command` on macOS or `scripts\\windows\\install.bat` on Windows (new, pending live acceptance), then switch themes from the in-app menu. Pause anytime with `scripts/pause.command`; a normal Codex restart always returns to stock.
+产物：
 
-## 交流群
+```text
+output\heige-codex-skin-studio.skill
+```
 
-扫码进微信群「Codex 皮肤共创交流」：纯技术交流，非盈利，互相学习。分享你做的主题、聊实现、提问题都欢迎。二维码过期了就开个 Issue，我会换新的。
+`output` 是生成目录，不进入 Git 历史。正式 `.skill` 通过 GitHub Release 分发，避免与 `themes` 中的素材重复存储。
 
-<img src="docs/images/wechat-group-qr.png" width="340" alt="Codex 皮肤共创交流微信群二维码">
+## 目录结构
 
-## 作者
+```text
+install.bat                  新电脑双击安装入口
+install.ps1                  根目录 PowerShell 安装入口
+src/                         CLI、主题校验、CSS/菜单生成、CDP 客户端
+themes/                      6 套正式主题和装饰资源
+scripts/windows/             Windows 安装、应用、暂停和自动加载
+skill/heige-codex-skin-studio/
+                             可分发 Skill 说明与安装入口
+test/                        自动化测试
+runtime/                     可选本机 Node 运行时，不进入 Git
+output/                      可重新生成的发行产物，不进入 Git
+```
 
-由 [黑哥AI（HeiGeAi）](https://github.com/HeiGeAi) 打造，公众号「黑哥Ai」，天宫开悟科技 CTO。同系开源项目见 [HeiGeAi 组织主页](https://github.com/HeiGeAi)，内容被 AI 引用优化用的是自家的 [HeiGe-GEO-SEO](https://github.com/HeiGeAi/HeiGe-GEO-SEO)。
+## 自动加载与安全边界
 
-## 许可证与素材
+- CDP 只绑定 `127.0.0.1:9341`。
+- 自动加载注册表位置为 `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`。
+- 自动加载器默认每 2 秒检查一次，5 分钟内最多自动重启 3 次，避免异常状态下形成连续重启。
+- `pause` 只移除当前 renderer 的主题，不修改 Codex 官方文件。
+- Codex 界面结构升级后，如果装饰失效，需要更新本仓库的 DOM 识别和 CSS。
 
-代码使用 [MIT License](LICENSE)。预览与预设中的角色、名称和视觉素材权利属于各自权利人（[初音未来](https://zh.wikipedia.org/wiki/初音未来)、原神、鸣潮、火影忍者、恋与深空等），仅用于主题概念展示，不由本项目的软件许可证授权，详见 [NOTICE.md](NOTICE.md)。
+## 项目关系
+
+本项目以 [HeiGeAi/heige-codex-skin-studio](https://github.com/HeiGeAi/heige-codex-skin-studio) 为基础，并参考了 [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) 的部分 Windows 实现思路。当前 Fork 专注于这 6 套自定义主题，不继续携带上游旧主题和旧版 macOS 发行链路。
+
+代码使用 [MIT License](LICENSE)。

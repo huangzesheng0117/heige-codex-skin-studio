@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "madohomu",
+  "name": "圆焰",
+  "menuOrder": 35,
+  "hero": "hero.jpg",
+  "colors": {
+    "accent": "#E48AAE",
+    "secondary": "#6E568D",
+    "surface": "#F5F7FF",
+    "text": "#49354F"
+  },
+  "copy": null,
+  "decorations": {
+    "preset": "madohomu",
+    "assets": {
+      "gemMadoka": "assets/cards/madoka.png",
+      "gemMami": "assets/cards/mami.png",
+      "gemHomura": "assets/cards/homura.png",
+      "gemKyoko": "assets/cards/kyoko.png",
+      "gemSayaka": "assets/cards/sayaka.png",
+      "mangaReference": "assets/cards/manga-reference-clean.webp"
+    }
+  }
+}

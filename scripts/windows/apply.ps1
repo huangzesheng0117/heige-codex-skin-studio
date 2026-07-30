@@ -1,4 +1,4 @@
-﻿param([string]$Theme = "miku-488137")
+﻿param([string]$Theme = "madoka-notebook")
 . (Join-Path $PSScriptRoot "lib\common.ps1")
 
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent

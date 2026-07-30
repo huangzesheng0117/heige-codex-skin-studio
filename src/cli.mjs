@@ -5,6 +5,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { discoverCodex } from "./codex-app.mjs";
 import { DEFAULT_CDP_PORT, DEFAULT_THEME_ID, resolveStudioPaths } from "./constants.mjs";
 import { applySkin, removeSkin, skinStatus } from "./injector.mjs";
+import { CUSTOM_THEME_ID } from "./skin-menu.mjs";
 import { loadTheme } from "./theme-schema.mjs";
 import { createSingleImageTheme, listThemes } from "./theme-store.mjs";
 
@@ -63,13 +64,14 @@ export async function runCli(argv, overrides = {}) {
   }
   if (command === "apply") {
     const themeId = args.theme ?? DEFAULT_THEME_ID;
+    const selectedThemeId = themeId === CUSTOM_THEME_ID ? DEFAULT_THEME_ID : themeId;
     const themes = await deps.listThemes({ roots });
-    const selected = themes.find((theme) => theme.id === themeId);
+    const selected = themes.find((theme) => theme.id === selectedThemeId);
     if (!selected) throw new Error(`找不到主题：${themeId}`);
     const loadedTheme = await deps.loadTheme(selected.path);
     const menuThemes = [];
     for (const theme of themes) {
-      if (theme.id === themeId) {
+      if (theme.id === selectedThemeId) {
         menuThemes.push(loadedTheme);
         continue;
       }
@@ -79,7 +81,7 @@ export async function runCli(argv, overrides = {}) {
         // 坏主题不阻塞换肤，只是不进菜单
       }
     }
-    return deps.applySkin({ loadedTheme, themes: menuThemes, port: portFrom(args.port) });
+    return deps.applySkin({ loadedTheme, themes: menuThemes, activeThemeId: themeId, port: portFrom(args.port) });
   }
   if (command === "pause" || command === "restore") {
     return deps.removeSkin({ port: portFrom(args.port) });

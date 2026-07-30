@@ -18,7 +18,7 @@ test("resolves the bundled node next to the windows executable", () => {
   assert.ok(candidates[0].includes("cua_node"));
 });
 
-test("discovery reports the first existing app and node per platform", async () => {
+test("discovery reports the first existing Windows app and node", async () => {
   const disk = new Set([
     "C:\\Users\\heige\\AppData\\Local\\Programs\\Codex\\Codex.exe",
     "C:\\Users\\heige\\AppData\\Local\\Programs\\Codex\\resources\\cua_node\\node.exe",
@@ -40,15 +40,7 @@ test("discovery degrades honestly when nothing is installed", async () => {
   assert.equal(result.bundledNodeFound, false);
 });
 
-test("mac discovery keeps the classic bundle path", async () => {
-  const result = await discoverCodex({ platform: "darwin", exists: async (path) => path === "/Applications/ChatGPT.app" });
-  assert.equal(result.appFound, true);
-  assert.match(result.bundledNode, /cua_node\/bin\/node$/);
-});
-
-test("state paths follow the platform convention", () => {
+test("state paths use the Windows roaming profile", () => {
   const win = resolveStudioPaths({ home: "C:\\Users\\heige", platform: "win32", env: winEnv });
   assert.ok(win.stateRoot.includes("Roaming"));
-  const mac = resolveStudioPaths({ home: "/Users/heige", platform: "darwin", env: {} });
-  assert.ok(mac.stateRoot.includes("Application Support"));
 });

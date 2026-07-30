@@ -1,83 +1,136 @@
 ---
 name: heige-codex-skin-studio
-description: 在 macOS 上用一张本地图片或 Codex 生成的图片快速制作、应用、暂停 Codex Desktop 皮肤。用户提到 Codex 换肤、主题、皮肤主图、初音未来预设或 Miku Future 宠物时使用。
+description: 在 Windows 上安装、应用、切换和维护 6 套自定义 Codex Desktop 主题；也可从本地图片创建新主题。用户提到 Codex 换肤、主题、皮肤主图、叛逆的物语、圆焰、见泷原放课后或名侦探光之美少女时使用。
 ---
 
 # HeiGe Codex Skin Studio
 
-目标是快速完成换肤。不要扩展成设计平台，不要拆分多层素材，不要修改 `app.asar`。
+目标是在 Windows 11 Codex Desktop 上快速安装和维护自定义主题。不要修改 `app.asar`、MSIX 安装目录、应用二进制或签名资源；全部效果通过仅监听本机回环地址的 CDP 实时注入。
 
-## 首次安装
+## 新电脑首次安装
 
-运行：
+优先使用以下任一入口：
 
-```bash
-open "$HOME/.agents/skills/heige-codex-skin-studio/scripts/install.command"
+1. 用户下载了 GitHub 仓库：双击仓库根目录的 `install.bat`。
+2. 用户下载了 Release 中的 `.skill`：将它作为 ZIP 解压，双击解压目录中的 `scripts\install.bat`。
+3. Codex 正在直接执行本 Skill：运行本 Skill 目录下的 `scripts\install.ps1`。
+
+安装器会：
+
+- 将运行文件复制到 `%USERPROFILE%\.codex\heige-codex-skin-studio`。
+- 优先使用可选的 `runtime\node.exe`，不存在时使用 Codex 自带 Node，最后回退到系统 Node。
+- 默认应用 `madoka-notebook`（叛逆的物语）。
+- 默认启用当前 Windows 用户的自动加载，之后重启 Codex 仍会恢复主题。
+
+只复制文件、不启动 Codex时使用 `-SkipApply`；应用主题但不注册自动加载时使用 `-SkipAutoLoad`。
+
+## 内置 6 套主题
+
+按菜单顺序：
+
+| 主题 ID | 显示名称 |
+| --- | --- |
+| `madoka-after-school-2k` | 见泷原放课后（2K版） |
+| `madoka-after-school` | 见泷原放课后（4K版） |
+| `madoka-notebook` | 叛逆的物语 |
+| `madohomu` | 圆焰 |
+| `moonlight-crystal-2k` | 名侦探光之美少女（2K版） |
+| `moonlight-crystal` | 名侦探光之美少女（4K版） |
+
+六套主题均包含背景、配色和新建任务装饰；魔法少女主题使用漫画功能卡片，名侦探主题使用案件卷宗式功能卡片。
+
+## 应用和切换主题
+
+安装目录：
+
+```text
+C:\Users\<当前用户>\.codex\heige-codex-skin-studio
 ```
 
-安装位置固定为 `~/.codex/heige-codex-skin-studio`。
+应用指定主题：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\apply.ps1" `
+  -Theme "madoka-notebook"
+```
+
+应用后，其余主题可从 Codex 右上角 🎨 菜单即时切换，也可选择“原生界面”。
+
+## 自动加载
+
+启用或更新重启后的默认主题：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\enable-auto-load.ps1" `
+  -Theme "madoka-notebook" -Port 9341
+```
+
+关闭自动加载：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\disable-auto-load.ps1"
+```
+
+自动加载器具有滚动重启预算，避免异常状态下连续重启 Codex。
+
+## 暂停皮肤
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\pause.ps1"
+```
+
+暂停只移除实时注入的样式、菜单和装饰，不修改 Codex 官方文件。
 
 ## 用户给了一张图片
 
 1. 确认图片是非空的 PNG、JPG、JPEG 或 WebP。
-2. 使用 Codex 自带的 Node 创建主题：
+2. 使用安装目录内的运行时探测函数调用 CLI：
 
-```bash
-"/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node" \
-  "$HOME/.codex/heige-codex-skin-studio/src/cli.mjs" create \
-  --image "/绝对路径/hero.webp" --name "主题名"
+```powershell
+$root = "$env:USERPROFILE\.codex\heige-codex-skin-studio"
+. (Join-Path $root "scripts\windows\lib\common.ps1")
+$node = Get-NodeRuntime -AppPath (Get-CodexApp)
+& $node (Join-Path $root "src\cli.mjs") create `
+  --image "C:\绝对路径\hero.webp" --name "主题名"
 ```
 
-3. 从返回 JSON 读取 `id`。
-4. 告知用户应用操作会正常退出并重新打开当前 Codex。
-5. 用户已要求立即应用时，打开应用脚本并传入 `id`：
+3. 从返回 JSON 中读取主题 `id`，再通过 `apply.ps1 -Theme "主题-id"` 应用。
 
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/scripts/apply.command" --args "主题-id"
-```
+通过页面菜单上传的“自定义图片”保存在 Codex 当前用户的 `localStorage`；如果要跨电脑分发，应使用 CLI 创建正式主题并把生成的主题目录加入仓库。
 
 ## 用户只给了创意描述
 
-先使用当前环境可用的 `imagegen` 技能生成一张完整的横向 UI 主图。画面要预留左侧导航和底部输入区的可读空间，不要把按钮、菜单文字或聊天内容烘焙进图片。拿到本地图片路径后，继续执行「用户给了一张图片」。
+先使用当前环境可用的 `imagegen` 技能生成完整横向 UI 主图。画面应为左侧导航和底部输入区预留可读空间，不要把按钮、菜单文字或聊天内容烘焙进图片。获得本地图片路径后继续执行“用户给了一张图片”。
 
-图片生成不可用时，直接请用户给一张本地图片，不要要求额外 API Key。
+图片生成不可用时，请用户提供本地图片，不要要求额外 API Key。
 
-## 内置预设
+## 验证与排障
 
-默认预设是高精度定制的 `miku-488137`，另有 8 个轻量预设（配色 + 背景底图）：
-`genshin-dawn`、`genshin-night`、`wuthering-tide`、`wuthering-echo`、`naruto-hokage`、`naruto-sasuke`、`deepspace-dawn`、`deepspace-star`。
+在仓库目录运行：
 
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/scripts/apply.command" --args "miku-488137"
+```powershell
+npm test
 ```
 
-应用任意一个后，其余预设都在右上角 🎨 菜单里一键切换。
+查看运行状态：
 
-## 界面内切换菜单
-
-应用任意主题后，Codex 右上角会出现一个 🎨 按钮。点开可以在所有已装主题和原生界面之间即时切换，不需要再跑命令。新建主题后重新执行一次 `apply.command`，菜单列表会刷新。
-
-菜单里的「＋ 自定义图片」支持用户直接上传本地图片：页面内自动压缩、按图片风格提取配色并立即应用，结果存在 Codex 本地存储里，重启后重新 apply 会自动回到菜单；菜单里该行行尾的 × 可随时删除。自定义槽位只有一个，再次上传会覆盖上一张。用户只是想快速试一张图时优先推荐这个入口；要做成可分发的正式主题再走 `create` 命令。
-
-## 暂停或恢复原界面
-
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/scripts/pause.command"
+```powershell
+$root = "$env:USERPROFILE\.codex\heige-codex-skin-studio"
+. (Join-Path $root "scripts\windows\lib\common.ps1")
+$node = Get-NodeRuntime -AppPath (Get-CodexApp)
+& $node (Join-Path $root "src\cli.mjs") status --port 9341
 ```
 
-这里只移除实时注入的 `<style>` 和切换菜单，因为工具从未修改 Codex 应用文件。
+自动加载日志位于：
 
-## 可选宠物
-
-仅当用户明确需要 `Miku Future` 宠物时运行：
-
-```bash
-open "$HOME/.codex/heige-codex-skin-studio/custom-pet/install.command"
+```text
+%APPDATA%\HeiGeCodexSkinStudio\auto-load.log
 ```
 
 ## 边界
 
-- 当前只支持 macOS。
+- 维护和验证目标是 Windows 11、MSIX 版 Codex Desktop。
 - CDP 固定监听 `127.0.0.1`，默认端口 `9341`。
-- Codex 完整重载 renderer 后需要重新应用一次。
-- 不修改应用包，不做 ASAR 注入，不处理 Windows 或 Linux。
+- Codex 完整重载 renderer 后，由自动加载器或 `apply.ps1` 重新注入。
+- 不修改 MSIX、`app.asar`、应用二进制或签名资源。
+- 本发行版不包含旧版 macOS 启动脚本、Miku 宠物或上游旧主题。

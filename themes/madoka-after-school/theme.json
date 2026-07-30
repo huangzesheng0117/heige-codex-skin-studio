@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "madoka-after-school",
+  "name": "见泷原放课后（4K版）",
+  "menuOrder": 20,
+  "hero": "hero.webp",
+  "colors": {
+    "accent": "#E08AA8",
+    "secondary": "#8FBAC7",
+    "surface": "#FFF9FB",
+    "text": "#403139"
+  },
+  "copy": null,
+  "decorations": {
+    "preset": "madoka-after-school",
+    "assets": {
+      "gemMadoka": "assets/cards/madoka.png",
+      "gemMami": "assets/cards/mami.png",
+      "gemHomura": "assets/cards/homura.png",
+      "gemKyoko": "assets/cards/kyoko.png",
+      "gemSayaka": "assets/cards/sayaka.png",
+      "mangaReference": "assets/cards/manga-reference-clean.webp"
+    }
+  }
+}
