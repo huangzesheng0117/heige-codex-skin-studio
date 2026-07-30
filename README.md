@@ -55,6 +55,33 @@ Set-Location ".\heige-codex-skin-studio"
 
 默认安装主题为 `madoka-notebook`（叛逆的物语）。安装后可通过 Codex 右上角 🎨 菜单即时切换所有主题、自定义图片或原生界面。
 
+## 主题实机展示
+
+以下截图来自 Windows 11、2K 显示器上的 Codex Desktop 实际运行界面。两个 4K 主题与对应 2K 主题采用相同设计，仅使用更高分辨率的背景素材，因此不重复展示。
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <strong>见泷原放课后（2K版）</strong><br>
+      <img src="docs/images/showcase-madoka-after-school-2k.png" alt="见泷原放课后（2K版）主题实机截图">
+    </td>
+    <td width="50%" align="center">
+      <strong>叛逆的物语</strong><br>
+      <img src="docs/images/showcase-madoka-notebook.png" alt="叛逆的物语主题实机截图">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <strong>圆焰</strong><br>
+      <img src="docs/images/showcase-madohomu.png" alt="圆焰主题实机截图">
+    </td>
+    <td width="50%" align="center">
+      <strong>名侦探光之美少女（2K版）</strong><br>
+      <img src="docs/images/showcase-moonlight-crystal-2k.png" alt="名侦探光之美少女（2K版）主题实机截图">
+    </td>
+  </tr>
+</table>
+
 ## 安装选项
 
 PowerShell 安装入口支持：
