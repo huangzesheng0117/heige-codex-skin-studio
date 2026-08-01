@@ -99,7 +99,8 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
 }
 
 .main-surface,
-.browser-main-surface {
+.browser-main-surface,
+[data-heige-role="main-surface"] {
   background: linear-gradient(180deg, transparent 0 40%, color-mix(in srgb, var(--heige-surface) 74%, transparent) 100%) !important;
 }
 

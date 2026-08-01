@@ -45,12 +45,14 @@ ${root} .app-shell-left-panel {
 }
 
 ${root}[data-heige-madoka-page="home"] .main-surface,
-${root}[data-heige-madoka-page="home"] .browser-main-surface {
+${root}[data-heige-madoka-page="home"] .browser-main-surface,
+${root}[data-heige-madoka-page="home"] [data-heige-role="main-surface"] {
   background: linear-gradient(180deg, rgba(255,255,255,.02) 0 59%, color-mix(in srgb, var(--heige-surface) 48%, transparent) 100%) !important;
 }
 
 ${root}[data-heige-madoka-page="task"] .main-surface,
-${root}[data-heige-madoka-page="task"] .browser-main-surface {
+${root}[data-heige-madoka-page="task"] .browser-main-surface,
+${root}[data-heige-madoka-page="task"] [data-heige-role="main-surface"] {
   background: linear-gradient(90deg, color-mix(in srgb, var(--heige-surface) 20%, transparent), rgba(255,255,255,.02) 45%, color-mix(in srgb, var(--heige-surface) 12%, transparent)) !important;
 }
 
@@ -235,12 +237,12 @@ ${root} .heige-madoka-frame::after {
   text-shadow: 34px 13px color-mix(in srgb, var(--heige-magical-line) 56%, transparent), 69px -7px color-mix(in srgb, var(--heige-magical-line) 50%, transparent), calc(100vw - 410px) -8px color-mix(in srgb, var(--heige-magical-line) 52%, transparent);
 }
 
-${root}[data-heige-madoka-page="task"] main.main-surface > .heige-madoka-scene {
+${root}[data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) > .heige-madoka-scene {
   position: fixed;
   inset: 36px 0 0 var(--sidebar-width, 275px);
 }
 
-${root}[data-heige-madoka-page="task"] main.main-surface > .heige-madoka-frame {
+${root}[data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) > .heige-madoka-frame {
   position: fixed;
   inset: 52px 17px 14px calc(var(--sidebar-width, 275px) + 17px);
 }
@@ -384,7 +386,8 @@ ${root}[data-heige-madoka-page="task"] #root {
 }
 
 ${root}[data-heige-madoka-page="home"] .main-surface,
-${root}[data-heige-madoka-page="home"] .browser-main-surface {
+${root}[data-heige-madoka-page="home"] .browser-main-surface,
+${root}[data-heige-madoka-page="home"] [data-heige-role="main-surface"] {
   background: linear-gradient(180deg, transparent 0 64%, color-mix(in srgb, var(--heige-surface) 32%, transparent) 100%) !important;
 }
 

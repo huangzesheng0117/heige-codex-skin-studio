@@ -26,12 +26,14 @@ export function buildMadokaNotebookCss() {
 }
 
 :root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="home"] .main-surface,
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="home"] .browser-main-surface {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="home"] .browser-main-surface,
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="home"] [data-heige-role="main-surface"] {
   background: linear-gradient(180deg, rgba(255,255,255,.04) 0 58%, rgba(255,248,251,.58) 100%) !important;
 }
 
 :root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] .main-surface,
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] .browser-main-surface {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] .browser-main-surface,
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] [data-heige-role="main-surface"] {
   background: linear-gradient(90deg, rgba(255,251,252,.34), rgba(255,251,252,.12) 42%, rgba(255,251,252,.2)) !important;
 }
 
@@ -394,21 +396,21 @@ export function buildMadokaNotebookCss() {
   filter: drop-shadow(0 8px 13px rgba(155, 90, 113, .14));
 }
 
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main.main-surface > .heige-madoka-scene {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) > .heige-madoka-scene {
   position: fixed;
   inset: 36px 0 0 var(--sidebar-width, 275px);
 }
 
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main.main-surface {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) {
   isolation: isolate;
 }
 
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main.main-surface > :not(.heige-madoka-scene):not(.heige-madoka-frame) {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) > :not(.heige-madoka-scene):not(.heige-madoka-frame) {
   position: relative;
   z-index: 1;
 }
 
-:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main.main-surface > .heige-madoka-frame {
+:root[data-heige-decoration="madoka-notebook"][data-heige-madoka-page="task"] main:is(.main-surface, [data-heige-role="main-surface"]) > .heige-madoka-frame {
   position: fixed;
   inset: 52px 17px 14px calc(var(--sidebar-width, 275px) + 17px);
 }

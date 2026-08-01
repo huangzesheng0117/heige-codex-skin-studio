@@ -425,8 +425,19 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
     for (const [key, property] of Object.entries(variableMap)) {
       if (assets[key]) html.style.setProperty(property, 'url("' + assets[key] + '")');
     }
+    // Codex 2026.08 replaced the former main.main-surface class with a
+    // CSS-module class such as _MainContentSurface_<hash>. Resolve that
+    // renderer surface here and give it our own stable role so theme CSS does
+    // not depend on Codex's generated hash.
+    const surface = firstVisibleDecorRoot(
+      'main.main-surface, main.browser-main-surface, main[class*="MainContentSurface"]',
+    );
+    for (const node of document.querySelectorAll('[data-heige-role="main-surface"]')) {
+      if (node !== surface) node.removeAttribute("data-heige-role");
+    }
+    surface?.setAttribute("data-heige-role", "main-surface");
     const home = firstVisibleDecorRoot('[role="main"]:has([data-testid="home-icon"])');
-    const task = home ? null : firstVisibleDecorRoot("main.main-surface");
+    const task = home ? null : surface;
     const activeRoot = home ?? task;
     html.dataset.heigeMadokaPage = home ? "home" : "task";
     if (!activeRoot) {

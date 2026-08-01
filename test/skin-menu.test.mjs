@@ -77,6 +77,8 @@ test("ships the Madoka DOM decorator only for a fully declared decorated theme",
   assert.doesNotMatch(script, /ensureSidebar/);
   assert.match(script, /ensureMadokaDecor/);
   assert.match(script, /main\.main-surface/);
+  assert.match(script, /main\[class\*=[^\]]*MainContentSurface/);
+  assert.match(script, /data-heige-role=\\?"main-surface/);
   assert.match(script, /if \(task\) ensureScene\(task, assets, decor\.preset\)/);
   assert.match(script, /firstVisibleDecorRoot/, "decorator must ignore hidden transition roots");
   assert.match(script, /pruneSceneRoots/, "decorator must remove stale or duplicate scene roots");
