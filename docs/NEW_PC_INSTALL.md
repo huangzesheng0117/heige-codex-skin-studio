@@ -20,7 +20,7 @@
 3. 双击解压目录根部的 `install.bat`。
 4. 等待 PowerShell 窗口显示安装完成。
 5. Codex 会应用“叛逆的物语”，并为当前用户启用自动加载。
-6. 之后使用右上角 🎨 菜单切换其他五套主题。
+6. 之后使用右上角 🎨 菜单切换其他三套主题。
 
 安装目录：
 
@@ -36,7 +36,7 @@ GitHub 下载版不包含 `runtime\node.exe` 是正常情况。安装器会自�
 
 ```text
 请阅读 README.md 和 skill/heige-codex-skin-studio/SKILL.md，
-在当前 Windows 电脑安装这六套主题，应用“叛逆的物语”，
+在当前 Windows 电脑安装这四套主题，应用“叛逆的物语”，
 启用自动加载，最后运行测试并确认主题状态。
 ```
 
@@ -65,7 +65,7 @@ Codex 应运行：
 
 ## 选择其他默认主题
 
-例如安装后默认启用名侦探光之美少女 2K：
+例如安装后默认启用名侦探光之美少女：
 
 ```powershell
 & ".\install.ps1" -Theme "moonlight-crystal-2k"
@@ -75,11 +75,9 @@ Codex 应运行：
 
 ```text
 madoka-after-school-2k
-madoka-after-school
 madoka-notebook
 madohomu
 moonlight-crystal-2k
-moonlight-crystal
 ```
 
 ## 验证
@@ -92,7 +90,7 @@ $node = Get-NodeRuntime -AppPath (Get-CodexApp)
 & $node (Join-Path $root "src\cli.mjs") status --port 9341
 ```
 
-`list` 应返回 6 套主题。自动加载日志位于：
+`list` 应返回 4 套主题。自动加载日志位于：
 
 ```text
 %APPDATA%\HeiGeCodexSkinStudio\auto-load.log

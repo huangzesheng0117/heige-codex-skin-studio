@@ -1,8 +1,8 @@
-# HeiGe Codex Skin Studio｜Windows 六主题定制版
+# HeiGe Codex Skin Studio｜Windows 四主题定制版
 
 这是基于 [HeiGeAi/heige-codex-skin-studio](https://github.com/HeiGeAi/heige-codex-skin-studio) 改造的 Windows 主题发行版。它通过本机回环 CDP 向 Codex Desktop 实时注入背景、配色、主题菜单、漫画功能卡片和装饰元素，不修改 MSIX、`app.asar`、应用二进制或签名资源。
 
-当前版本已在 Windows 11、MSIX 版 Codex Desktop 上真机运行验证，仓库只保留 6 套自定义主题和 Windows 安装链路。
+当前版本已在 Windows 11、MSIX 版 Codex Desktop 上真机运行验证，仓库只保留 4 套自定义主题和 Windows 安装链路。
 
 ## 新电脑最快安装
 
@@ -42,28 +42,26 @@ Set-Location ".\heige-codex-skin-studio"
 
 更详细的新电脑流程见 [新电脑安装说明](docs/NEW_PC_INSTALL.md)。
 
-## 当前 6 套主题
+## 当前 4 套主题
 
 | 主题 ID | 菜单名称 | 新建任务界面 |
 | --- | --- | --- |
-| `madoka-after-school-2k` | 见泷原放课后（2K版） | 魔法少女漫画功能卡片 |
-| `madoka-after-school` | 见泷原放课后（4K版） | 魔法少女漫画功能卡片 |
+| `madoka-after-school-2k` | 见泷原放课后 | 魔法少女漫画功能卡片 |
 | `madoka-notebook` | 叛逆的物语 | 魔法少女漫画功能卡片、五件武器与 QB |
 | `madohomu` | 圆焰 | 魔法少女漫画功能卡片 |
-| `moonlight-crystal-2k` | 名侦探光之美少女（2K版） | 立体案件卷宗功能卡片 |
-| `moonlight-crystal` | 名侦探光之美少女（4K版） | 立体案件卷宗功能卡片 |
+| `moonlight-crystal-2k` | 名侦探光之美少女 | 立体案件卷宗功能卡片 |
 
 默认安装主题为 `madoka-notebook`（叛逆的物语）。安装后可通过 Codex 右上角 🎨 菜单即时切换所有主题、自定义图片或原生界面。
 
 ## 主题实机展示
 
-以下截图来自 Windows 11、2K 显示器上的 Codex Desktop 实际运行界面。两个 4K 主题与对应 2K 主题采用相同设计，仅使用更高分辨率的背景素材，因此不重复展示。
+以下截图来自 Windows 11、2K 显示器上的 Codex Desktop 实际运行界面。四套主题的背景素材均已统一为 3840×2160 WebP。
 
 <table>
   <tr>
     <td width="50%" align="center">
-      <strong>见泷原放课后（2K版）</strong><br>
-      <img src="docs/images/showcase-madoka-after-school-2k.png" alt="见泷原放课后（2K版）主题实机截图">
+      <strong>见泷原放课后</strong><br>
+      <img src="docs/images/showcase-madoka-after-school-2k.png" alt="见泷原放课后主题实机截图">
     </td>
     <td width="50%" align="center">
       <strong>叛逆的物语</strong><br>
@@ -76,8 +74,8 @@ Set-Location ".\heige-codex-skin-studio"
       <img src="docs/images/showcase-madohomu.png" alt="圆焰主题实机截图">
     </td>
     <td width="50%" align="center">
-      <strong>名侦探光之美少女（2K版）</strong><br>
-      <img src="docs/images/showcase-moonlight-crystal-2k.png" alt="名侦探光之美少女（2K版）主题实机截图">
+      <strong>名侦探光之美少女</strong><br>
+      <img src="docs/images/showcase-moonlight-crystal-2k.png" alt="名侦探光之美少女主题实机截图">
     </td>
   </tr>
 </table>
@@ -210,7 +208,7 @@ output\heige-codex-skin-studio.skill
 install.bat                  新电脑双击安装入口
 install.ps1                  根目录 PowerShell 安装入口
 src/                         CLI、主题校验、CSS/菜单生成、CDP 客户端
-themes/                      6 套正式主题和装饰资源
+themes/                      4 套正式主题和装饰资源
 scripts/windows/             Windows 安装、应用、暂停和自动加载
 skill/heige-codex-skin-studio/
                              可分发 Skill 说明与安装入口
@@ -229,6 +227,6 @@ output/                      可重新生成的发行产物，不进入 Git
 
 ## 项目关系
 
-本项目以 [HeiGeAi/heige-codex-skin-studio](https://github.com/HeiGeAi/heige-codex-skin-studio) 为基础，并参考了 [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) 的部分 Windows 实现思路。当前 Fork 专注于这 6 套自定义主题，不继续携带上游旧主题和旧版 macOS 发行链路。
+本项目以 [HeiGeAi/heige-codex-skin-studio](https://github.com/HeiGeAi/heige-codex-skin-studio) 为基础，并参考了 [Fei-Away/Codex-Dream-Skin](https://github.com/Fei-Away/Codex-Dream-Skin) 的部分 Windows 实现思路。当前 Fork 专注于这 4 套自定义主题，不继续携带上游旧主题和旧版 macOS 发行链路。
 
 代码使用 [MIT License](LICENSE)。

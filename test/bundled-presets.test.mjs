@@ -16,11 +16,9 @@ test("every bundled preset validates and ships a real hero", async () => {
   assert.deepEqual(
     ids.sort(),
     [
-      "madoka-after-school",
       "madoka-after-school-2k",
       "madoka-notebook",
       "madohomu",
-      "moonlight-crystal",
       "moonlight-crystal-2k",
     ].sort(),
   );
@@ -34,14 +32,12 @@ test("every bundled preset validates and ships a real hero", async () => {
   }
 });
 
-test("ships the six renamed presets in their explicit menu order", async () => {
+test("ships the four bundled presets in their explicit menu order", async () => {
   const expected = new Map([
-    ["madoka-after-school-2k", "见泷原放课后（2K版）"],
-    ["madoka-after-school", "见泷原放课后（4K版）"],
+    ["madoka-after-school-2k", "见泷原放课后"],
     ["madoka-notebook", "叛逆的物语"],
     ["madohomu", "圆焰"],
-    ["moonlight-crystal-2k", "名侦探光之美少女（2K版）"],
-    ["moonlight-crystal", "名侦探光之美少女（4K版）"],
+    ["moonlight-crystal-2k", "名侦探光之美少女"],
   ]);
 
   for (const [id, name] of expected) {
@@ -53,7 +49,7 @@ test("ships the six renamed presets in their explicit menu order", async () => {
   assert.deepEqual(listed.map(({ id, name }) => [id, name]), [...expected]);
 });
 
-test("ships the approved manga-card assets for Rebellion, MadoHomu, and both After School themes", async () => {
+test("ships the approved manga-card assets for Rebellion, MadoHomu, and After School", async () => {
   const expected = new Map([
     ["gemMadoka", "madoka.png"],
     ["gemMami", "mami.png"],
@@ -62,7 +58,7 @@ test("ships the approved manga-card assets for Rebellion, MadoHomu, and both Aft
     ["gemSayaka", "sayaka.png"],
   ]);
 
-  for (const id of ["madoka-notebook", "madohomu", "madoka-after-school-2k", "madoka-after-school"]) {
+  for (const id of ["madoka-notebook", "madohomu", "madoka-after-school-2k"]) {
     const theme = await loadTheme(join(themesRoot, id));
     for (const [key, fileName] of expected) {
       assert.equal(theme.manifest.decorations.assets[key], `assets/cards/${fileName}`);
@@ -87,7 +83,7 @@ test("ships the approved Star Detective title, portraits, and casebook reference
     ["gemSayaka", "arcana.png"],
   ]);
 
-  for (const id of ["moonlight-crystal-2k", "moonlight-crystal"]) {
+  for (const id of ["moonlight-crystal-2k"]) {
     const theme = await loadTheme(join(themesRoot, id));
     for (const [key, fileName] of expected) {
       assert.equal(theme.manifest.decorations.assets[key], `assets/icons/${fileName}`);

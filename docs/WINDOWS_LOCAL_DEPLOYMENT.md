@@ -43,12 +43,10 @@ scripts\
 
 | 主题 ID | 菜单名称 |
 | --- | --- |
-| `madoka-after-school-2k` | 见泷原放课后（2K版） |
-| `madoka-after-school` | 见泷原放课后（4K版） |
+| `madoka-after-school-2k` | 见泷原放课后 |
 | `madoka-notebook` | 叛逆的物语 |
 | `madohomu` | 圆焰 |
-| `moonlight-crystal-2k` | 名侦探光之美少女（2K版） |
-| `moonlight-crystal` | 名侦探光之美少女（4K版） |
+| `moonlight-crystal-2k` | 名侦探光之美少女 |
 
 开发源主题目录：
 

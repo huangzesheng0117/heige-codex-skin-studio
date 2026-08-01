@@ -18,7 +18,7 @@ test("keeps the reusable skill free of author paths", async () => {
   // Both represent the same Markdown frontmatter and must be accepted.
   assert.match(skill, /^---\r?\nname: heige-codex-skin-studio\r?\n/);
   assert.doesNotMatch(skill, /\/Users\/blakexu/);
-  assert.match(skill, /内置 6 套主题/);
+  assert.match(skill, /内置 4 套主题/);
   assert.match(skill, /madohomu/);
 });
 
@@ -113,11 +113,9 @@ test("packages and installs a self-contained Windows distribution", {
   );
   const themes = JSON.parse(stdout);
   assert.deepEqual(themes.map(({ id }) => id).sort(), [
-    "madoka-after-school",
     "madoka-after-school-2k",
     "madoka-notebook",
     "madohomu",
-    "moonlight-crystal",
     "moonlight-crystal-2k",
   ].sort());
 });

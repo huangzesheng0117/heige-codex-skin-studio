@@ -1,6 +1,6 @@
 ---
 name: heige-codex-skin-studio
-description: 在 Windows 上安装、应用、切换和维护 6 套自定义 Codex Desktop 主题；也可从本地图片创建新主题。用户提到 Codex 换肤、主题、皮肤主图、叛逆的物语、圆焰、见泷原放课后或名侦探光之美少女时使用。
+description: 在 Windows 上安装、应用、切换和维护 4 套自定义 Codex Desktop 主题；也可从本地图片创建新主题。用户提到 Codex 换肤、主题、皮肤主图、叛逆的物语、圆焰、见泷原放课后或名侦探光之美少女时使用。
 ---
 
 # HeiGe Codex Skin Studio
@@ -24,20 +24,18 @@ description: 在 Windows 上安装、应用、切换和维护 6 套自定义 Cod
 
 只复制文件、不启动 Codex时使用 `-SkipApply`；应用主题但不注册自动加载时使用 `-SkipAutoLoad`。
 
-## 内置 6 套主题
+## 内置 4 套主题
 
 按菜单顺序：
 
 | 主题 ID | 显示名称 |
 | --- | --- |
-| `madoka-after-school-2k` | 见泷原放课后（2K版） |
-| `madoka-after-school` | 见泷原放课后（4K版） |
+| `madoka-after-school-2k` | 见泷原放课后 |
 | `madoka-notebook` | 叛逆的物语 |
 | `madohomu` | 圆焰 |
-| `moonlight-crystal-2k` | 名侦探光之美少女（2K版） |
-| `moonlight-crystal` | 名侦探光之美少女（4K版） |
+| `moonlight-crystal-2k` | 名侦探光之美少女 |
 
-六套主题均包含背景、配色和新建任务装饰；魔法少女主题使用漫画功能卡片，名侦探主题使用案件卷宗式功能卡片。
+四套主题均包含背景、配色和新建任务装饰；魔法少女主题使用漫画功能卡片，名侦探主题使用案件卷宗式功能卡片。
 
 ## 应用和切换主题
 
