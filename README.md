@@ -149,6 +149,10 @@ $node = Get-NodeRuntime -AppPath (Get-CodexApp)
 %APPDATA%\HeiGeCodexSkinStudio\auto-load.log
 ```
 
+## 问题记录
+
+已知故障、原因分析、修复方式及验证结果见 [问题记录](docs/ISSUES.md)。
+
 ## 用自己的图片制作主题
 
 支持 PNG、JPG、JPEG 和 WebP：
