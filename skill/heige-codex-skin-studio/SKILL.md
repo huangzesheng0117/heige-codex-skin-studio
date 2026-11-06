@@ -24,6 +24,10 @@ description: 在 Windows 上安装、应用、切换和维护 4 套自定义 Cod
 
 只复制文件、不启动 Codex时使用 `-SkipApply`；应用主题但不注册自动加载时使用 `-SkipAutoLoad`。
 
+v1.1.0 的 `.skill` 与 Windows `.zip` 安装包包含相同运行文件。新电脑需要已安装官方 Codex Desktop；优先使用其内置 Node，若客户端不包含兼容 Node，则需用户安装 Node.js 22 或更新版本。
+
+如果当前会话没有启用调试端口，安装器不会关闭它。即使即时应用失败，也会完成自动加载注册，并以非零退出码明确提示“主题设置待完成”。向用户说明文件安装与主题生效的区别，交由用户手动完全退出 ChatGPT；随后再运行下方 `apply.ps1` 入口。不要因这个提示强制结束应用，也不要在健康校验前宣称主题已生效。
+
 ## 内置 4 套主题
 
 按菜单顺序：
@@ -69,7 +73,7 @@ C:\Users\<当前用户>\.codex\heige-codex-skin-studio
 & "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\disable-auto-load.ps1"
 ```
 
-自动加载器具有滚动重启预算，避免异常状态下连续重启 Codex。
+自动加载器每 15 秒检查主窗口主题健康，按窗口修复异常，尊重手动切换和暂停；失败时指数退避，并分别限制注入和重启预算。已有、带调试参数或曾连接成功的会话不会因短暂失联被重启，所有启动路径都不会强制结束应用。
 
 ## 暂停皮肤
 
