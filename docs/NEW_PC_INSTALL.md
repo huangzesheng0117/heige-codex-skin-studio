@@ -55,20 +55,23 @@ Codex 应运行：
 
 不需要修改 `app.asar`、MSIX 目录或 Codex 官方文件。
 
-## 从 Release Skill 安装
+## 从 Release 安装包安装
 
-1. 从以下页面下载最新 `.skill`：
+1. 从以下页面下载最新 `heige-codex-skin-studio-windows.zip` 或 `.skill`：
 
    ```text
    https://github.com/huangzesheng0117/heige-codex-skin-studio/releases/latest
    ```
 
-2. 直接把 `.skill` 交给 Codex；或者把扩展名改成 `.zip` 后解压。
+2. 手动安装直接解压 Windows ZIP；使用 Codex 安装则把 `.skill` 交给 Codex。两份附件内容相同，可用 `SHA256SUMS.txt` 校验。
 3. 手动解压时双击：
 
    ```text
    heige-codex-skin-studio\scripts\install.bat
    ```
+
+`custom-themes-v1.1.0` 已包含启动重试、持续健康检查、背景兼容和安装失败后继续注册自启的修复。
+安装时如果提示主题设置待完成，请按本页前述步骤手动退出当前 ChatGPT 会话，再运行主题入口。
 
 ## 选择其他默认主题
 

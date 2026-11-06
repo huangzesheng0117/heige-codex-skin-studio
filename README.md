@@ -35,14 +35,15 @@ Set-Location ".\heige-codex-skin-studio"
 
 ### 方法三：Release 安装包
 
-从 [Releases](https://github.com/huangzesheng0117/heige-codex-skin-studio/releases/latest) 下载最新的 `.skill` 文件：
+从 [Releases](https://github.com/huangzesheng0117/heige-codex-skin-studio/releases/latest) 下载最新安装包：
 
-- 可以直接交给新电脑上的 Codex，让它按照 Skill 说明安装。
-- 也可以把 `.skill` 当作 ZIP 解压，然后双击 `heige-codex-skin-studio\scripts\install.bat`。
+- 手动安装：下载 `heige-codex-skin-studio-windows.zip`，解压后双击 `heige-codex-skin-studio\scripts\install.bat`。
+- 交给 Codex 安装：下载同内容的 `heige-codex-skin-studio.skill`，让它按照包内 Skill 说明安装。
+- 附件 `SHA256SUMS.txt` 提供两个安装包的完整性校验值。
 
 更详细的新电脑流程见 [新电脑安装说明](docs/NEW_PC_INSTALL.md)。
 
-2026 年 11 月的启动与健康检查加固随本次源码提交提供。获取该更新请使用仓库 ZIP 或 Git 克隆；已有 Release 的 `.skill` 附件需要另行发布才会包含这些修复。
+2026 年 11 月的启动、健康检查与安装兼容修复已包含在 [Windows 四主题修复版 v1.1.0](https://github.com/huangzesheng0117/heige-codex-skin-studio/releases/tag/custom-themes-v1.1.0) 的源码和安装包中。
 
 ## 当前 4 套主题
 
