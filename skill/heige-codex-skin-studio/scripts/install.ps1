@@ -46,7 +46,7 @@ try {
     throw
 }
 
-Write-Host "HeiGe Codex Skin Studio 已安装到：$target"
+Write-Host "HeiGe Codex Skin Studio installed at: $target"
 if (-not $SkipApply -and $env:HEIGE_SKIP_APPLY -ne "1") {
     $applyFailure = $null
     try {
