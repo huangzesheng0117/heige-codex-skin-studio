@@ -7,17 +7,38 @@ function Get-CodexPackage {
         Select-Object -First 1
 }
 
+function Disable-ExternalCodexCliOverride {
+    $override = [Environment]::GetEnvironmentVariable(
+        "CODEX_CLI_PATH",
+        [System.EnvironmentVariableTarget]::Process
+    )
+    if ([string]::IsNullOrWhiteSpace($override)) { return $null }
+
+    # The desktop app owns its bundled Codex runtime. Clear only this process's
+    # inherited override so terminals and the user's persistent environment are
+    # not changed by the skin loader.
+    [Environment]::SetEnvironmentVariable(
+        "CODEX_CLI_PATH",
+        $null,
+        [System.EnvironmentVariableTarget]::Process
+    )
+    return $override
+}
+
 function Get-CodexApp {
-    $candidates = @(
+    $package = Get-CodexPackage
+    $candidates = @()
+    if ($package) {
+        # Prefer the newest installed MSIX package so app updates also advance
+        # the bundled Codex runtime without a hard-coded version or path.
+        $candidates += Join-Path $package.InstallLocation "app\ChatGPT.exe"
+    }
+    $candidates += @(
         (Join-Path $env:LOCALAPPDATA "Programs\ChatGPT\ChatGPT.exe"),
         (Join-Path $env:LOCALAPPDATA "Programs\Codex\Codex.exe"),
         (Join-Path $env:ProgramFiles "ChatGPT\ChatGPT.exe"),
         (Join-Path $env:ProgramFiles "Codex\Codex.exe")
     )
-    $package = Get-CodexPackage
-    if ($package) {
-        $candidates += Join-Path $package.InstallLocation "app\ChatGPT.exe"
-    }
     foreach ($path in $candidates) {
         if (Test-Path $path) { return $path }
     }
@@ -95,20 +116,99 @@ namespace HeiGeCodexSkin {
     [void][HeiGeCodexSkin.AppActivator]::Activate($appUserModelId, $arguments)
 }
 
+function ConvertTo-WindowsProcessArgument {
+    param([AllowEmptyString()][string]$Value)
+    # ProcessStartInfo.ArgumentList is unavailable in Windows PowerShell 5.1.
+    # Quote each argument using the Windows CRT rules, including trailing '\'.
+    $quoted = [System.Text.StringBuilder]::new()
+    [void]$quoted.Append('"')
+    $backslashes = 0
+    foreach ($character in $Value.ToCharArray()) {
+        if ($character -eq '\') { $backslashes++; continue }
+        if ($character -eq '"') {
+            [void]$quoted.Append(('\' * (2 * $backslashes + 1)))
+        } else {
+            [void]$quoted.Append(('\' * $backslashes))
+        }
+        [void]$quoted.Append($character)
+        $backslashes = 0
+    }
+    [void]$quoted.Append(('\' * (2 * $backslashes)))
+    [void]$quoted.Append('"')
+    return $quoted.ToString()
+}
+
+function Invoke-ThemeCli {
+    param(
+        [Parameter(Mandatory = $true)][string]$Node,
+        [Parameter(Mandatory = $true)][string]$Cli,
+        [string[]]$Arguments = @(),
+        [ValidateRange(0.01, 60)][double]$TimeoutSeconds = 10
+    )
+    $startInfo = [System.Diagnostics.ProcessStartInfo]::new()
+    $startInfo.FileName = $Node
+    $startInfo.Arguments = (@(@($Cli) + $Arguments | ForEach-Object {
+        ConvertTo-WindowsProcessArgument -Value $_
+    }) -join ' ')
+    $startInfo.UseShellExecute = $false
+    $startInfo.CreateNoWindow = $true
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.StandardOutputEncoding = [System.Text.UTF8Encoding]::new($false)
+    $startInfo.StandardErrorEncoding = [System.Text.UTF8Encoding]::new($false)
+    $child = [System.Diagnostics.Process]::new()
+    $child.StartInfo = $startInfo
+    $started = $false
+    $elapsed = [System.Diagnostics.Stopwatch]::StartNew()
+    try {
+        $started = $child.Start()
+        if (-not $started) { throw "Could not start the theme CLI helper." }
+        # Drain both pipes concurrently so a full stderr/stdout buffer cannot
+        # deadlock the parent while it waits for the child to finish.
+        $stdout = $child.StandardOutput.ReadToEndAsync()
+        $stderr = $child.StandardError.ReadToEndAsync()
+        $remainingMs = [int][Math]::Max(0, [Math]::Floor($TimeoutSeconds * 1000 - $elapsed.Elapsed.TotalMilliseconds))
+        if (-not $child.WaitForExit($remainingMs)) {
+            # This handle belongs only to the Node CLI created above. Never
+            # enumerate or terminate ChatGPT or other application processes.
+            $child.Kill()
+            throw "Theme CLI helper timed out after $TimeoutSeconds seconds; only that helper was stopped."
+        }
+        $remainingMs = [int][Math]::Max(0, [Math]::Floor($TimeoutSeconds * 1000 - $elapsed.Elapsed.TotalMilliseconds))
+        $streams = [System.Threading.Tasks.Task[]]@($stdout, $stderr)
+        if (-not [System.Threading.Tasks.Task]::WaitAll($streams, $remainingMs)) {
+            throw "Theme CLI output collection timed out after $TimeoutSeconds seconds."
+        }
+        return [pscustomobject]@{
+            ExitCode = $child.ExitCode
+            Output = $stdout.Result
+            Error = $stderr.Result
+        }
+    } finally {
+        if ($started) {
+            try { if (-not $child.HasExited) { $child.Kill() } } catch {}
+            try { $child.StandardOutput.Dispose() } catch {}
+            try { $child.StandardError.Dispose() } catch {}
+        }
+        $child.Dispose()
+    }
+}
+
 function Test-Cdp {
     param([int]$Port)
     $client = New-Object System.Net.Sockets.TcpClient
     try {
         $connect = $client.ConnectAsync("127.0.0.1", $Port)
-        if (-not $connect.Wait(200)) { return $false }
+        if (-not $connect.Wait(1000)) { return $false }
     } catch {
         return $false
     } finally {
         $client.Close()
     }
     try {
-        Invoke-RestMethod -Uri "http://127.0.0.1:$Port/json/list" -TimeoutSec 1 | Out-Null
-        return $true
+        $targets = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/json/list" -TimeoutSec 3
+        # A reachable but unrelated HTTP service must not be treated as CDP.
+        return $null -ne $targets -and $targets -is [array]
     } catch {
         return $false
     }
@@ -123,29 +223,56 @@ function Get-CodexProcesses {
 }
 
 function Start-CodexWithCdp {
-    param([int]$Port = 9341)
+    param(
+        [ValidateRange(1024, 65535)][int]$Port = 9341,
+        [switch]$AllowRestart,
+        [ValidateRange(0.01, 120)][double]$ExitTimeoutSeconds = 20,
+        [ValidateRange(0.01, 120)][double]$StartupTimeoutSeconds = 45
+    )
+    # Guard every launch entry point, including manual apply/customize calls.
+    [void](Disable-ExternalCodexCliOverride)
     if (Test-Cdp -Port $Port) { return }
 
     $app = Get-CodexApp
     $running = @(Get-CodexProcesses -AppPath $app)
     if ($running) {
+        # An existing debug-enabled app may only be busy. Never close it to
+        # repair a transient endpoint timeout. Missing command-line metadata
+        # is treated conservatively rather than assuming a restart is safe.
+        $processIds = @($running | ForEach-Object { [int]$_.Id })
+        try {
+            $processName = [System.IO.Path]::GetFileName($app).Replace("'", "''")
+            $metadata = @(Get-CimInstance Win32_Process -Filter "Name='$processName'" -ErrorAction Stop |
+                Where-Object { [int]$_.ProcessId -in $processIds })
+        } catch {
+            $metadata = @()
+        }
+        $debugPattern = '--remote-debugging-port(?:=|\s+)"?' + $Port + '(?:"?(?:\s|$))'
+        $knownDebugPort = @($metadata | Where-Object { $_.CommandLine -match $debugPattern }).Count -gt 0
+        $metadataIncomplete = $metadata.Count -ne $processIds.Count -or
+            @($metadata | Where-Object { [string]::IsNullOrWhiteSpace($_.CommandLine) }).Count -gt 0
+        if ($knownDebugPort -or $metadataIncomplete) {
+            $readiness = [System.Diagnostics.Stopwatch]::StartNew()
+            while ($readiness.Elapsed.TotalSeconds -lt $StartupTimeoutSeconds) {
+                if (Test-Cdp -Port $Port) { return }
+                Start-Sleep -Milliseconds 500
+            }
+            throw "Codex debug endpoint is not ready on port $Port; the existing app was left running. Retry later or restart ChatGPT manually."
+        }
+        if (-not $AllowRestart) {
+            throw "ChatGPT is already running without port $Port. Restart it manually using the theme launcher; no app process was closed."
+        }
+        # The endpoint may have become ready during discovery.
+        if (Test-Cdp -Port $Port) { return }
         Write-Host "正在正常退出 Codex，以调试端口重新打开……"
         $running | ForEach-Object { $_.CloseMainWindow() | Out-Null }
-        for ($i = 0; $i -lt 20; $i++) {
+        $exitWait = [System.Diagnostics.Stopwatch]::StartNew()
+        while ($exitWait.Elapsed.TotalSeconds -lt $ExitTimeoutSeconds) {
             if (-not (Get-CodexProcesses -AppPath $app)) { break }
             Start-Sleep -Milliseconds 250
         }
-        $remaining = @(Get-CodexProcesses -AppPath $app)
-        if ($remaining) {
-            Write-Host "Codex did not exit in time; stopping the remaining app processes."
-            $remaining | Stop-Process -Force -ErrorAction SilentlyContinue
-            for ($i = 0; $i -lt 20; $i++) {
-                if (-not (Get-CodexProcesses -AppPath $app)) { break }
-                Start-Sleep -Milliseconds 250
-            }
-            if (Get-CodexProcesses -AppPath $app) {
-                throw "Codex processes could not be stopped before relaunch."
-            }
+        if (Get-CodexProcesses -AppPath $app) {
+            throw "ChatGPT did not exit within $ExitTimeoutSeconds seconds. No process was force-stopped; please exit and restart ChatGPT manually."
         }
     }
 
@@ -154,14 +281,16 @@ function Start-CodexWithCdp {
     if ($packagedApp -and $app -eq $packagedApp) {
         Start-PackagedCodex -Package $package -Port $Port
     } else {
+        # This is the user-facing ChatGPT window, not a background helper.
         Start-Process -FilePath $app -ArgumentList @(
             "--remote-debugging-address=127.0.0.1",
             "--remote-debugging-port=$Port"
         )
     }
-    for ($i = 0; $i -lt 80; $i++) {
+    $startupWait = [System.Diagnostics.Stopwatch]::StartNew()
+    while ($startupWait.Elapsed.TotalSeconds -lt $StartupTimeoutSeconds) {
         if (Test-Cdp -Port $Port) { return }
-        Start-Sleep -Milliseconds 250
+        Start-Sleep -Milliseconds 500
     }
-    throw "Codex 未在 $Port 端口就绪。请彻底退出 Codex 后重试。"
+    throw "Codex debug endpoint was not ready on port $Port within $StartupTimeoutSeconds seconds. The app was left running; retry later or restart ChatGPT manually."
 }

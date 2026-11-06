@@ -48,6 +48,13 @@ test("creates a skin directly from one image", async () => {
   );
 });
 
+test("passes an explicit repair target without changing the requested theme", async () => {
+  const result = await runCli(["apply", "--theme", "madoka-notebook", "--target", "main-two"], deps({
+    applySkin: async ({ targetId, activeThemeId }) => ({ targetId, activeThemeId }),
+  }));
+  assert.deepEqual(result, { targetId: "main-two", activeThemeId: "madoka-notebook" });
+});
+
 test("rejects unknown commands and missing options", async () => {
   await assert.rejects(() => runCli(["create", "--image", "/tmp/a.png"], deps()), /--name/);
   await assert.rejects(() => runCli(["launch"], deps()), /未知命令/);

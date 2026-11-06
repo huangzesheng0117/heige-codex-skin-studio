@@ -97,7 +97,11 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
 
   window.__heigeCodexSkin?.destroy?.();
 
-  let style = document.getElementById(data.styleId);
+  // Repair stale duplicates as well as missing nodes. Keeping extra copies
+  // would leave the health probe permanently unhealthy after reinjection.
+  const styles = [...document.querySelectorAll("#" + data.styleId)];
+  let style = styles.shift();
+  for (const duplicate of styles) duplicate.remove();
   if (!style) {
     style = document.createElement("style");
     style.id = data.styleId;
@@ -425,17 +429,14 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
     for (const [key, property] of Object.entries(variableMap)) {
       if (assets[key]) html.style.setProperty(property, 'url("' + assets[key] + '")');
     }
-    // Codex 2026.08 replaced the former main.main-surface class with a
-    // CSS-module class such as _MainContentSurface_<hash>. Resolve that
-    // renderer surface here and give it our own stable role so theme CSS does
-    // not depend on Codex's generated hash.
-    const surface = firstVisibleDecorRoot(
-      'main.main-surface, main.browser-main-surface, main[class*="MainContentSurface"]',
-    );
+    // Prefer the semantic app-shell hook, while retaining older CSS-module
+    // and legacy class support. The stable role keeps decorated CSS portable.
+    const surface = firstVisibleDecorRoot('main[data-app-shell-main-surface]')
+      ?? firstVisibleDecorRoot('main.main-surface, main.browser-main-surface, main[class*="MainContentSurface"]');
     for (const node of document.querySelectorAll('[data-heige-role="main-surface"]')) {
       if (node !== surface) node.removeAttribute("data-heige-role");
     }
-    surface?.setAttribute("data-heige-role", "main-surface");
+    if (surface?.dataset.heigeRole !== "main-surface") surface?.setAttribute("data-heige-role", "main-surface");
     const home = firstVisibleDecorRoot('[role="main"]:has([data-testid="home-icon"])');
     const task = home ? null : surface;
     const activeRoot = home ?? task;
@@ -486,7 +487,7 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
     decorState.poller = setInterval(scheduleDecor, 350);
   };
 
-  document.getElementById(data.menuId)?.remove();
+  for (const duplicate of document.querySelectorAll("#" + data.menuId)) duplicate.remove();
   const root = document.createElement("div");
   root.id = data.menuId;
   root.style.cssText = "position:fixed;top:45px;right:76px;z-index:2147483000;font:500 13px/1.4 system-ui;user-select:none;-webkit-app-region:no-drag;";
@@ -526,6 +527,7 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
     const theme = data.themes.find((candidate) => candidate.id === id);
     if (!theme) return;
     style.textContent = theme.css;
+    delete document.documentElement.dataset.heigeCodexSkinPaused;
     document.documentElement.dataset.heigeCodexSkin = theme.id;
     startDecor(theme.decorations);
     paint(theme.id);
@@ -534,6 +536,7 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
     stopDecor();
     style.textContent = "";
     delete document.documentElement.dataset.heigeCodexSkin;
+    document.documentElement.dataset.heigeCodexSkinPaused = "true";
     paint(null);
   };
 
@@ -593,6 +596,7 @@ export function buildSkinMenuScript({ entries, activeId, fallbackId, styleId, me
   const applyCustomTheme = (theme) => {
     stopDecor();
     style.textContent = buildCustomCss(theme.dataUrl, theme.colors);
+    delete document.documentElement.dataset.heigeCodexSkinPaused;
     document.documentElement.dataset.heigeCodexSkin = data.customId;
     ensureCustomRow(theme);
     paint(data.customId);

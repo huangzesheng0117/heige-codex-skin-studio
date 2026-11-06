@@ -19,8 +19,15 @@
 2. 解压 ZIP。
 3. 双击解压目录根部的 `install.bat`。
 4. 等待 PowerShell 窗口显示安装完成。
-5. Codex 会应用“叛逆的物语”，并为当前用户启用自动加载。
+5. 安装器尝试应用“叛逆的物语”，并为当前用户启用自动加载。
 6. 之后使用右上角 🎨 菜单切换其他三套主题。
+
+如果当前 ChatGPT 没有启用调试端口，安装器会保留当前会话、完成自动加载注册，并提示主题尚未验证。
+此时请手动完全退出 ChatGPT，再通过以下主题入口启动；不要在提示出现前结束正在使用的会话：
+
+```powershell
+& "$env:USERPROFILE\.codex\heige-codex-skin-studio\scripts\windows\apply.ps1" -Theme "madoka-notebook"
+```
 
 安装目录：
 

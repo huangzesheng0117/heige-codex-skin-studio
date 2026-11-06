@@ -15,9 +15,16 @@ test("builds one fast generic skin from a theme and image data URL", () => {
 
   assert.match(css, /HEIGE_CODEX_SKIN:miku-488137/);
   assert.match(css, /data:image\/webp;base64,AAAA/);
+  assert.match(css, /\[data-app-shell-main-surface\]/);
   assert.match(css, /\[data-heige-role="main-surface"\]/);
+  assert.match(css, /main\[class\*="MainContentSurface"\]/);
   assert.match(css, /\.app-shell-left-panel/);
   assert.match(css, /\.composer-surface-chrome/);
+  assert.match(css, /--color-background-surface: transparent !important/);
+  assert.match(css, /--color-background-panel: color-mix\(in srgb, var\(--heige-surface\) 52%, transparent\)/);
+  assert.match(css, /data-response-annotation-conversation/);
+  assert.match(css, /background: color-mix\(in srgb, var\(--heige-surface\) 78%, transparent\)/);
+  assert.match(css, /data-local-conversation-final-assistant[\s\S]*background: transparent !important/);
   assert.match(css, /data-content-search-unit-key\$=":assistant"/);
   assert.match(css, /background: color-mix\(in srgb, var\(--heige-surface\) 86%, transparent\)/);
   assert.match(css, /backdrop-filter: blur\(14px\)/);
@@ -46,9 +53,12 @@ test("adds the Madoka notebook layout while keeping the native font stack", () =
   assert.match(css, /heige-madoka-cards/);
   assert.match(css, /heige-weapon-homura/);
   assert.match(css, /data-heige-madoka-page="task"/);
-  assert.match(css, /main:is\(\.main-surface, \[data-heige-role="main-surface"\]\) > \.heige-madoka-scene/);
-  assert.match(css, /main:is\(\.main-surface, \[data-heige-role="main-surface"\]\) \{\s*isolation: isolate;/);
-  assert.match(css, /main:is\(\.main-surface, \[data-heige-role="main-surface"\]\) > :not\(\.heige-madoka-scene\):not\(\.heige-madoka-frame\)/);
+  assert.match(css, /main\.main-surface > \.heige-madoka-scene/);
+  assert.match(css, /main\[data-app-shell-main-surface\] > \.heige-madoka-scene/);
+  assert.match(css, /main\[data-heige-role="main-surface"\] > \.heige-madoka-scene/);
+  assert.match(css, /main\[data-heige-role="main-surface"\] > :not\(\.heige-madoka-scene\):not\(\.heige-madoka-frame\)/);
+  assert.match(css, /main\.main-surface \{\s*isolation: isolate;/);
+  assert.match(css, /main\.main-surface > :not\(\.heige-madoka-scene\):not\(\.heige-madoka-frame\)/);
   assert.match(css, /\.heige-madoka-scene \{\s*z-index: 0;/);
   assert.match(css, /\.heige-weapon-sayaka \{[\s\S]*width: 286px;[\s\S]*height: 124px;/);
   assert.match(css, /\.heige-weapon-kyoko \{[\s\S]*height: 226px;/);
@@ -99,7 +109,9 @@ test("adds home and task layouts for every magical card theme", () => {
     assert.match(css, /data-heige-madoka-page="home"/);
     assert.match(css, /data-heige-madoka-page="task"/);
     assert.match(css, /heige-madoka-cards/);
-    assert.match(css, /main:is\(\.main-surface, \[data-heige-role="main-surface"\]\) > \.heige-madoka-frame/);
+    assert.match(css, /main\.main-surface > \.heige-madoka-frame/);
+    assert.match(css, /main\[data-app-shell-main-surface\] > \.heige-madoka-frame/);
+    assert.match(css, /main\[data-heige-role="main-surface"\] > \.heige-madoka-frame/);
     assert.match(css, /top: 12px;/);
     assert.match(css, /min-height: calc\(var\(--heige-heading-icon-height\) \+ 86px\)/);
     assert.match(css, /transform: translateX\(-50%\)/);

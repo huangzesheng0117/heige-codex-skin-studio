@@ -53,7 +53,7 @@ export async function runCli(argv, overrides = {}) {
 
   if (command === "help") {
     return {
-      commands: ["list", "create --image PATH --name NAME", "apply [--theme ID] [--port 9341]", "pause", "status", "doctor"],
+      commands: ["list", "create --image PATH --name NAME", "apply [--theme ID] [--port 9341] [--target TARGET_ID]", "pause", "status", "doctor"],
     };
   }
   if (command === "list") return deps.listThemes({ roots });
@@ -81,7 +81,7 @@ export async function runCli(argv, overrides = {}) {
         // 坏主题不阻塞换肤，只是不进菜单
       }
     }
-    return deps.applySkin({ loadedTheme, themes: menuThemes, activeThemeId: themeId, port: portFrom(args.port) });
+    return deps.applySkin({ loadedTheme, themes: menuThemes, activeThemeId: themeId, targetId: args.target, port: portFrom(args.port) });
   }
   if (command === "pause" || command === "restore") {
     return deps.removeSkin({ port: portFrom(args.port) });

@@ -91,7 +91,9 @@ test("packages and installs a self-contained Windows distribution", {
     "scripts/windows/apply.bat",
     "scripts/windows/install.ps1",
     "scripts/windows/lib/common.ps1",
+    "scripts/windows/lib/auto-load-policy.ps1",
     "scripts/windows/auto-load.ps1",
+    "scripts/windows/supervise-auto-load.ps1",
   ]) {
     await access(join(installed, relative));
   }

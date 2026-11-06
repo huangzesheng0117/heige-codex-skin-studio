@@ -48,8 +48,26 @@ try {
 
 Write-Host "HeiGe Codex Skin Studio 已安装到：$target"
 if (-not $SkipApply -and $env:HEIGE_SKIP_APPLY -ne "1") {
-    & (Join-Path $target "scripts\windows\apply.ps1") -Theme $Theme
+    $applyFailure = $null
+    try {
+        & (Join-Path $target "scripts\windows\apply.ps1") -Theme $Theme
+    } catch {
+        $applyFailure = $_.Exception.Message
+        Write-Warning "The theme has not been applied or verified: $applyFailure"
+    }
+
+    # Register even when applying to an existing non-debug session fails. Defer
+    # that session so the newly started watcher cannot close the user's app.
     if (-not $SkipAutoLoad) {
-        & (Join-Path $target "scripts\windows\enable-auto-load.ps1") -Theme $Theme -Port 9341
+        & (Join-Path $target "scripts\windows\enable-auto-load.ps1") -Theme $Theme -Port 9341 -DeferCurrentCodex
+    }
+
+    if ($null -ne $applyFailure) {
+        if ($SkipAutoLoad) {
+            $recovery = "Automatic loading was skipped. Completely quit ChatGPT/Codex manually, then run '$target\scripts\windows\apply.ps1' -Theme '$Theme'."
+        } else {
+            $recovery = "Automatic loading is enabled and the current session was left running. Completely quit ChatGPT/Codex manually, then open it again."
+        }
+        throw "Theme files are installed, but theme setup is pending. $recovery Original apply error: $applyFailure"
     }
 }

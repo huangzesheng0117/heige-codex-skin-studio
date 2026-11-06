@@ -77,6 +77,7 @@ test("ships the Madoka DOM decorator only for a fully declared decorated theme",
   assert.doesNotMatch(script, /ensureSidebar/);
   assert.match(script, /ensureMadokaDecor/);
   assert.match(script, /main\.main-surface/);
+  assert.match(script, /main\[data-app-shell-main-surface\]/);
   assert.match(script, /main\[class\*=[^\]]*MainContentSurface/);
   assert.match(script, /data-heige-role=\\?"main-surface/);
   assert.match(script, /if \(task\) ensureScene\(task, assets, decor\.preset\)/);

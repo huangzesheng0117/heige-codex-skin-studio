@@ -52,8 +52,8 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
   --heige-surface: ${colors.surface};
   --heige-text: ${colors.text};
   --heige-hero: url(${JSON.stringify(heroDataUrl)});
-  --color-background-surface: color-mix(in srgb, var(--heige-surface) 90%, transparent) !important;
-  --color-background-panel: color-mix(in srgb, var(--heige-surface) 94%, transparent) !important;
+  --color-background-surface: transparent !important;
+  --color-background-panel: color-mix(in srgb, var(--heige-surface) 52%, transparent) !important;
   --color-background-button-primary: var(--heige-accent) !important;
   --color-text-foreground: var(--heige-text) !important;
   --color-border: color-mix(in srgb, var(--heige-accent) 45%, transparent) !important;
@@ -98,21 +98,46 @@ export function buildSkinCss({ theme, heroDataUrl, logoDataUrl = null, polaroidD
   backdrop-filter: blur(20px) saturate(1.12);
 }
 
+/* The app shell now uses CSS-module classes; its semantic surface attribute
+ * keeps backgrounds working across builds while retaining the legacy hooks. */
+[data-app-shell-main-surface],
+[data-heige-role="main-surface"],
+main[class*="MainContentSurface"],
 .main-surface,
-.browser-main-surface,
-[data-heige-role="main-surface"] {
+.browser-main-surface {
   background: linear-gradient(180deg, transparent 0 40%, color-mix(in srgb, var(--heige-surface) 74%, transparent) 100%) !important;
 }
 
 .composer-surface-chrome,
 [data-user-message-bubble],
-[data-local-conversation-final-assistant],
 [data-codex-approval-surface] {
   color: var(--heige-text) !important;
   border-color: color-mix(in srgb, var(--heige-accent) 48%, transparent) !important;
-  background: color-mix(in srgb, var(--heige-surface) 88%, transparent) !important;
+  background: color-mix(in srgb, var(--heige-surface) 84%, transparent) !important;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--heige-accent) 18%, transparent) !important;
   backdrop-filter: blur(18px) saturate(1.08);
+}
+
+/*
+ * Newer Codex builds wrap each assistant message in a response annotation.
+ * Keep the outer response transparent so the hero stays visible, then give
+ * only the readable message itself a compact translucent card.
+ */
+[data-local-conversation-final-assistant] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+[data-response-annotation-conversation] {
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--heige-accent) 28%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--heige-surface) 78%, transparent) !important;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--heige-accent) 11%, transparent);
+  backdrop-filter: blur(12px) saturate(1.05);
 }
 
 [data-app-action-sidebar-thread-active="true"] {
